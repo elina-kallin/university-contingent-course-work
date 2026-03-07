@@ -12,8 +12,10 @@ class Dean(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
 
     full_name = Column(String, nullable=False)
-    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"))
+
+    login = Column(String, nullable=False, unique=True)
+    password_hash = Column(String, nullable=False)
+
     faculty_id = Column(UUID(as_uuid=True), ForeignKey("faculties.id"))
 
-    user = relationship("User", back_populates="dean", uselist=False)
     faculty = relationship("Faculty", back_populates="dean", uselist=False)

@@ -1,0 +1,346 @@
+from sqlalchemy import Column, ForeignKey, Date, String
+from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import relationship
+
+from app.database.base import Base
+
+
+class AcademicLeaveOrder(Base):
+    __tablename__ = "academic_leave_orders"
+
+    order_id = Column(UUID(as_uuid=True), ForeignKey("orders.id"), primary_key=True)
+
+    leave_start = Column(Date)
+
+    leave_end = Column(Date)
+
+    leave_reason = Column(String)
+
+    order = relationship("Order", back_populates="academic_leave_order")
+
+
+import uuid
+from sqlalchemy import Column, ForeignKey
+from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import relationship
+
+from app.database.base import Base
+
+
+class Curriculum(Base):
+    __tablename__ = "curriculums"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+
+    direction_id = Column(
+        UUID(as_uuid=True), ForeignKey("directions.id"), nullable=False
+    )
+
+    direction = relationship("Direction", back_populates="curriculum", uselist=False)
+
+    disciplines = relationship("Discipline", back_populates="curriculum")
+
+import uuid
+from sqlalchemy import Column, String, ForeignKey
+from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import relationship
+
+from app.database.base import Base
+
+
+class Dean(Base):
+    __tablename__ = "deans"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+
+    full_name = Column(String, nullable=False)
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"))
+    faculty_id = Column(UUID(as_uuid=True), ForeignKey("faculties.id"))
+
+    user = relationship("User", back_populates="dean", uselist=False)
+    faculty = relationship("Faculty", back_populates="dean", uselist=False)
+
+import uuid
+from sqlalchemy import Column, String, Integer, ForeignKey
+from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import relationship
+
+from app.database.base import Base
+
+
+class Direction(Base):
+    __tablename__ = "directions"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+
+    name = Column(String, nullable=False)
+    code = Column(String, nullable=False)
+
+    study_duration_years = Column(Integer, nullable=False)
+
+    faculty_id = Column(UUID(as_uuid=True), ForeignKey("faculties.id"))
+
+    faculty = relationship("Faculty", back_populates="directions")
+
+    groups = relationship(
+        "Group", back_populates="direction", cascade="all, delete-orphan"
+    )
+
+    curriculum = relationship("Curriculum", back_populates="direction", uselist=False)
+
+import uuid
+from sqlalchemy import Column, ForeignKey, Integer, String
+from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import relationship
+
+from app.database.base import Base
+
+
+class Discipline(Base):
+    __tablename__ = "disciplines"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+
+    name = Column(String, nullable=False)
+    semester = Column(Integer)
+    hours = Column(Integer)
+    control_type = Column(String, nullable=False)
+
+    curriculum_id = Column(
+        UUID(as_uuid=True), ForeignKey("curriculums.id"), nullable=False
+    )
+
+    curriculum = relationship("Curriculum", back_populates="disciplines", uselist=False)
+
+from sqlalchemy import Column, ForeignKey, String
+from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import relationship
+
+from app.database.base import Base
+
+
+class EnrollmentOrder(Base):
+    __tablename__ = "enrollment_orders"
+
+    order_id = Column(UUID(as_uuid=True), ForeignKey("orders.id"), primary_key=True)
+
+    education_form = Column(String, nullable=False)
+
+    price = Column(String)
+
+    order = relationship("Order", back_populates="enrollment_order")
+
+
+from sqlalchemy import Column, ForeignKey, String, Date
+from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import relationship
+
+from app.database.base import Base
+
+
+class ExpulsionOrder(Base):
+    __tablename__ = "expulsion_orders"
+
+    order_id = Column(UUID(as_uuid=True), ForeignKey("orders.id"), primary_key=True)
+
+    expulsion_date = Column(Date)
+
+    expulsion_reason = Column(String)
+
+    order = relationship("Order", back_populates="expulsion_order")
+
+
+import uuid
+from sqlalchemy import Column, String
+from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import relationship
+
+from app.database.base import Base
+
+
+class Faculty(Base):
+    __tablename__ = "faculties"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+
+    name = Column(String, nullable=False)
+    short_name = Column(String, nullable=False)
+
+    directions = relationship(
+        "Direction", back_populates="faculty", cascade="all, delete-orphan"
+    )
+    dean = relationship("Dean", back_populates="faculty", uselist=False)
+
+
+import uuid
+from sqlalchemy import Column, String, Integer, ForeignKey
+from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import relationship
+
+from app.database.base import Base
+
+
+class Group(Base):
+    __tablename__ = "groups"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+
+    name = Column(String, nullable=False)
+    course = Column(Integer, nullable=False)
+
+    direction_id = Column(UUID(as_uuid=True), ForeignKey("directions.id"))
+
+    direction = relationship("Direction", back_populates="groups")
+
+    students = relationship(
+        "Student", back_populates="group", cascade="all, delete-orphan"
+    )
+
+from sqlalchemy import Column, ForeignKey, Integer
+from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import relationship
+
+from app.database.base import Base
+
+
+class NextCourseOrder(Base):
+    __tablename__ = "next_course_orders"
+
+    order_id = Column(UUID(as_uuid=True), ForeignKey("orders.id"), primary_key=True)
+
+    from_course = Column(Integer)
+
+    to_course = Column(Integer)
+
+    order = relationship("Order", back_populates="next_course_order")
+
+import uuid
+from sqlalchemy import Column, ForeignKey
+from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import relationship
+
+from app.database.base import Base
+
+
+class OrderStudent(Base):
+    __tablename__ = "order_students"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+
+    order_id = Column(UUID(as_uuid=True), ForeignKey("orders.id"), nullable=False)
+
+    student_id = Column(UUID(as_uuid=True), ForeignKey("students.id"), nullable=False)
+
+    order = relationship("Order", back_populates="students")
+
+    student = relationship("Student", back_populates="orders")
+
+import uuid
+from sqlalchemy import Column, Integer, String, Date
+from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import relationship
+
+from app.database.base import Base
+
+
+class Order(Base):
+    __tablename__ = "orders"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+
+    number = Column(String, nullable=False)
+    date = Column(Date, nullable=False)
+    type = Column(String, nullable=False)
+    reason = Column(String, nullable=False)
+
+    students = relationship(
+        "OrderStudent", back_populates="order", cascade="all, delete-orphan"
+    )
+
+    enrollment_order = relationship(
+        "EnrollmentOrder", back_populates="order", uselist=False
+    )
+
+    expulsion_order = relationship(
+        "ExpulsionOrder", back_populates="order", uselist=False
+    )
+
+    academic_leave_order = relationship(
+        "AcademicLeaveOrder", back_populates="order", uselist=False
+    )
+
+    next_course_order = relationship(
+        "NextCourseOrder", back_populates="order", uselist=False
+    )
+
+    transfer_direction_order = relationship(
+        "TransferDirectionOrder", back_populates="order", uselist=False
+    )
+
+import uuid
+from sqlalchemy import Column, String, Integer, ForeignKey, Date
+from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import relationship
+
+from app.database.base import Base
+
+
+class Student(Base):
+    __tablename__ = "students"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+
+    name = Column(String, nullable=False)
+    last_name = Column(String, nullable=False)
+    patronymic = Column(String)
+    study_book_number = Column(Integer, nullable=False)
+    enrollment_date = Column(Date)
+    expulsion_date = Column(Date)
+    status = Column(String, nullable=False)
+
+    group_id = (UUID(as_uuid=True), ForeignKey("groups.id"))
+    group = relationship("Groups", back_populates="students")
+    orders = relationship("OrderStudent", back_populates="student")
+
+
+from sqlalchemy import Column, ForeignKey
+from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import relationship
+
+from app.database.base import Base
+
+
+class TransferDirectionOrder(Base):
+    __tablename__ = "transfer_direction_orders"
+
+    order_id = Column(UUID(as_uuid=True), ForeignKey("orders.id"), primary_key=True)
+
+    from_direction_id = Column(UUID(as_uuid=True), ForeignKey("directions.id"))
+
+    to_direction_id = Column(UUID(as_uuid=True), ForeignKey("directions.id"))
+
+    order = relationship("Order", back_populates="transfer_direction_order")
+
+    from_direction = relationship("Direction", foreign_keys=[from_direction_id])
+
+    to_direction = relationship("Direction", foreign_keys=[to_direction_id])
+
+import uuid
+from sqlalchemy import Column, String, Boolean
+from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import relationship
+
+from app.database.base import Base
+
+
+class User(Base):
+    __tablename__ = "users"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+
+    login = Column(String, nullable=False)
+    password = Column(String, nullable=False)
+    role = Column(String, nullable=False)
+    is_active = Column(Boolean, default=True)
+
+    dean = relationship("Dean", back_populates="user", uselist=False)

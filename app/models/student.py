@@ -19,6 +19,6 @@ class Student(Base):
     expulsion_date = Column(Date)
     status = Column(String, nullable=False)
 
-    group_id = (UUID(as_uuid=True), ForeignKey("groups.id"))
-    group = relationship("Groups", back_populates="students")
+    group_id = Column(UUID(as_uuid=True), ForeignKey("groups.id"))
+    group = relationship("Group", back_populates="students")
     orders = relationship("OrderStudent", back_populates="student")

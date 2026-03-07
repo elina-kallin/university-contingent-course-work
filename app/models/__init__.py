@@ -12,4 +12,3 @@ from .order import Order
 from .order_student import OrderStudent
 from .next_course_order import NextCourseOrder
 from .transfer_direction_order import TransferDirectionOrder
-from .user import User

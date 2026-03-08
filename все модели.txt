@@ -18,7 +18,6 @@ class AcademicLeaveOrder(Base):
 
     order = relationship("Order", back_populates="academic_leave_order")
 
-
 import uuid
 from sqlalchemy import Column, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
@@ -40,6 +39,7 @@ class Curriculum(Base):
 
     disciplines = relationship("Discipline", back_populates="curriculum")
 
+
 import uuid
 from sqlalchemy import Column, String, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
@@ -54,11 +54,14 @@ class Dean(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
 
     full_name = Column(String, nullable=False)
-    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"))
+
+    login = Column(String, nullable=False, unique=True)
+    password_hash = Column(String, nullable=False)
+
     faculty_id = Column(UUID(as_uuid=True), ForeignKey("faculties.id"))
 
-    user = relationship("User", back_populates="dean", uselist=False)
     faculty = relationship("Faculty", back_populates="dean", uselist=False)
+
 
 import uuid
 from sqlalchemy import Column, String, Integer, ForeignKey
@@ -88,6 +91,7 @@ class Direction(Base):
 
     curriculum = relationship("Curriculum", back_populates="direction", uselist=False)
 
+
 import uuid
 from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.dialects.postgresql import UUID
@@ -111,6 +115,7 @@ class Discipline(Base):
     )
 
     curriculum = relationship("Curriculum", back_populates="disciplines", uselist=False)
+
 
 from sqlalchemy import Column, ForeignKey, String
 from sqlalchemy.dialects.postgresql import UUID
@@ -196,6 +201,7 @@ class Group(Base):
         "Student", back_populates="group", cascade="all, delete-orphan"
     )
 
+
 from sqlalchemy import Column, ForeignKey, Integer
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
@@ -213,6 +219,7 @@ class NextCourseOrder(Base):
     to_course = Column(Integer)
 
     order = relationship("Order", back_populates="next_course_order")
+
 
 import uuid
 from sqlalchemy import Column, ForeignKey
@@ -234,6 +241,7 @@ class OrderStudent(Base):
     order = relationship("Order", back_populates="students")
 
     student = relationship("Student", back_populates="orders")
+
 
 import uuid
 from sqlalchemy import Column, Integer, String, Date
@@ -277,6 +285,7 @@ class Order(Base):
         "TransferDirectionOrder", back_populates="order", uselist=False
     )
 
+
 import uuid
 from sqlalchemy import Column, String, Integer, ForeignKey, Date
 from sqlalchemy.dialects.postgresql import UUID
@@ -298,10 +307,9 @@ class Student(Base):
     expulsion_date = Column(Date)
     status = Column(String, nullable=False)
 
-    group_id = (UUID(as_uuid=True), ForeignKey("groups.id"))
-    group = relationship("Groups", back_populates="students")
+    group_id = Column(UUID(as_uuid=True), ForeignKey("groups.id"))
+    group = relationship("Group", back_populates="students")
     orders = relationship("OrderStudent", back_populates="student")
-
 
 from sqlalchemy import Column, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
@@ -324,23 +332,3 @@ class TransferDirectionOrder(Base):
     from_direction = relationship("Direction", foreign_keys=[from_direction_id])
 
     to_direction = relationship("Direction", foreign_keys=[to_direction_id])
-
-import uuid
-from sqlalchemy import Column, String, Boolean
-from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import relationship
-
-from app.database.base import Base
-
-
-class User(Base):
-    __tablename__ = "users"
-
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-
-    login = Column(String, nullable=False)
-    password = Column(String, nullable=False)
-    role = Column(String, nullable=False)
-    is_active = Column(Boolean, default=True)
-
-    dean = relationship("Dean", back_populates="user", uselist=False)

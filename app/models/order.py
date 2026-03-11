@@ -1,9 +1,10 @@
 import uuid
-from sqlalchemy import Column, Integer, String, Date
+from sqlalchemy import Column, Integer, String, Date, Enum
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
 from app.database.base import Base
+from app.enums import OrderType
 
 
 class Order(Base):
@@ -13,7 +14,7 @@ class Order(Base):
 
     number = Column(String, nullable=False)
     date = Column(Date, nullable=False)
-    type = Column(String, nullable=False)
+    type = Column(Enum(OrderType), nullable=False)
     reason = Column(String, nullable=False)
 
     students = relationship(

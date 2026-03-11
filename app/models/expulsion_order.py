@@ -1,8 +1,9 @@
-from sqlalchemy import Column, ForeignKey, String, Date
+from sqlalchemy import Column, ForeignKey, String, Date, Enum
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
 from app.database.base import Base
+from app.enums import ExpulsionReason
 
 
 class ExpulsionOrder(Base):
@@ -12,6 +13,6 @@ class ExpulsionOrder(Base):
 
     expulsion_date = Column(Date)
 
-    expulsion_reason = Column(String)
+    expulsion_reason = Column(Enum(ExpulsionReason))
 
     order = relationship("Order", back_populates="expulsion_order")

@@ -1,8 +1,9 @@
-from sqlalchemy import Column, ForeignKey, Date, String
+from sqlalchemy import Column, ForeignKey, Date, String, Enum
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
 from app.database.base import Base
+from app.enums import AcademicLeaveReason
 
 
 class AcademicLeaveOrder(Base):
@@ -14,6 +15,6 @@ class AcademicLeaveOrder(Base):
 
     leave_end = Column(Date)
 
-    leave_reason = Column(String)
+    leave_reason = Column(Enum(AcademicLeaveReason))
 
     order = relationship("Order", back_populates="academic_leave_order")

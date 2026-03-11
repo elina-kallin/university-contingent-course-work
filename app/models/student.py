@@ -1,9 +1,10 @@
 import uuid
-from sqlalchemy import Column, String, Integer, ForeignKey, Date
+from sqlalchemy import Column, String, Integer, ForeignKey, Date, Enum
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
 from app.database.base import Base
+from app.enums import StudentStatus
 
 
 class Student(Base):
@@ -17,7 +18,7 @@ class Student(Base):
     study_book_number = Column(Integer, nullable=False)
     enrollment_date = Column(Date)
     expulsion_date = Column(Date)
-    status = Column(String, nullable=False)
+    status = Column(Enum(StudentStatus), nullable=False, default=StudentStatus.STUDY)
 
     group_id = Column(UUID(as_uuid=True), ForeignKey("groups.id"))
     group = relationship("Group", back_populates="students")

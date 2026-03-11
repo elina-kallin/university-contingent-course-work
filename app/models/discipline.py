@@ -1,9 +1,10 @@
 import uuid
-from sqlalchemy import Column, ForeignKey, Integer, String
+from sqlalchemy import Column, ForeignKey, Integer, String, Enum
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
 from app.database.base import Base
+from app.enums import ControlType
 
 
 class Discipline(Base):
@@ -14,7 +15,7 @@ class Discipline(Base):
     name = Column(String, nullable=False)
     semester = Column(Integer)
     hours = Column(Integer)
-    control_type = Column(String, nullable=False)
+    control_type = Column(Enum(ControlType), nullable=False)
 
     curriculum_id = Column(
         UUID(as_uuid=True), ForeignKey("curriculums.id"), nullable=False

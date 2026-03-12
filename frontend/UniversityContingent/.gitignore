@@ -1,0 +1,79 @@
+# Visual Studio / .NET
+## Build results
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+bld/
+[Bb]uild/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.log
+
+# Visual Studio 2015/2017/2019/2022 cache/options directory
+.vs/
+
+# Visual Studio Code
+.vscode/
+
+# Rider
+.idea/
+
+# NuGet
+*.nupkg
+*.snupkg
+.nuget/
+nuget.exe
+packages/
+
+# Test results
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+
+# Files built by Visual Studio
+*_i.c
+*_p.c
+*_h.h
+*.ilk
+*.meta
+*.obj
+*.iobj
+*.pch
+*.ipdb
+*.idb
+*.rsc
+*.rc
+*.res
+
+# MSTest test Results
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+
+# Backup & report files
+_UpgradeReport_Files/
+Backup*/
+UpgradeLog*.XML
+UpgradeLog*.htm
+
+# Node.js (if using)
+node_modules/
+
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+# Folder config file
+Desktop.ini
+
+# Mac
+.DS_Store
+
+# Logs
+*.log
+
+# Local environment for .NET
+local.settings.json

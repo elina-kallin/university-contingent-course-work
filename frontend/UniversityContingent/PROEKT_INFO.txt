@@ -1,0 +1,126 @@
+================================================================================  
+UNIVERSITY CONTINGENT - POLNAYA INFORMATSIYA O PROEKTE  
+Kursavaya rabota: Universitet. Uchet kontingenta. Distsiplina: PiAPS  
+================================================================================  
+  
+STEK TEKHNOLOGIY:  
+----------------  
+Backend: Python 3.10+, FastAPI, SQLAlchemy, Alembic, PostgreSQL  
+Frontend: C#, Windows Forms, .NET 6, Newtonsoft.Json  
+BD: PostgreSQL (PostgresPro)  
+Avtorizatsiya: JWT tokeny 
+  
+STRUKTURA PROEKTA:  
+------------------  
+backend/ - Python bekend (VSYO RABOTAYET)  
+  app/  
+    core/ - JWT, security, config  
+    cruds/ - 14 CRUD faylov  
+    models/ - 14 SQLAlchemy modeley  
+    routers/ - 10 API routerov  
+    schemas/ - 15 Pydantic skhem  
+    services/ - order_service.py, print_service.py  
+    enums.py - Perechisleniya  
+    main.py - Tochnka vhoda  
+  migrations/ - Alembic migratsii  
+  alembic.ini  
+  requirements.txt  
+  
+frontend/ - C# Windows Forms (V RAZRABOTKE)  
+  UniversityContingent/  
+    Models/ - AuthModels.cs, Faculty.cs  
+    Services/ - ApiService.cs  
+    LoginForm.cs - Forma avtorizatsii  
+    MainForm.cs - Glavnaya forma  
+    Program.cs 
+  
+================================================================================  
+DANNYE DLYA VHODA:  
+-----------------  
+Login: dean  
+Parol: dean123  
+Dekan: Svyatov Kirill Valerievich  
+Fakultet: Fakultet informatsionnykh sistem i tekhnologiy (FIST)  
+  
+================================================================================  
+ZAPUSK PROEKTA:  
+-----------------  
+  
+BEKEND:  
+cd d:\code\university-contingent-course-work\backend  
+..\..\.venv\Scripts\activate  
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000  
+  
+Swagger UI: http://localhost:8000/docs  
+  
+FRONTEND:  
+1. Otkryt Visual Studio  
+2. File - Open - Project/Solution  
+3. Vybrat: d:\code\university-contingent-course-work\frontend\UniversityContingent.sln  
+4. Nazhat F5 (zapusk) 
+  
+================================================================================  
+GLAVNYE API ENDPOINTS:  
+-----------------------  
+  
+1. AVTORIZATSIYA:  
+   POST /auth/login  
+   Body: {\"login\": \"dean\", \"password\": \"dean123\"}  
+  
+2. SPRAVOCHNIKI:  
+   GET /enums/ - vse perechisleniya  
+  
+3. CRUD:  
+   GET/POST /faculties  
+   GET/POST /directions  
+   GET/POST /groups  
+   GET/POST/PUT/DELETE /students  
+  
+4. SPETSIALNYE PRIKAZY (kaskadnoe sozdanie):  
+   POST /special-orders/enrollment-with-students  
+   POST /special-orders/expulsion-with-students  
+   POST /special-orders/academic-leave-with-students  
+   POST /special-orders/next-course-with-students  
+   POST /special-orders/transfer-direction-with-students  
+  
+5. PECHAT PRIKAZOV:  
+   GET /orders/{id}/print - HTML dlya pechati  
+  
+6. RAZNITSA UCHEBNYKH PLANOV:  
+   GET /curriculums/difference/{dir1_id}/{dir2_id}  
+  
+7. OTChETY:  
+   GET /reports/contingent?period_start=... 
+  
+================================================================================  
+VAZHNIE MOMENTY:  
+-----------------  
+1. Studenty sozdayutsya TOLKO cherez prikaz o zachislenii!  
+   Ispolzovat: POST /special-orders/enrollment-with-students  
+  
+2. Pri otchislenii/akademe status studenta obnovlyaetsya avtomaticheski  
+  
+3. Pechat prikaza: GET /orders/{id}/print - v brauzere - 
+  
+4. Raznitsa uchebnykh planov nuzhna dlya perevoda na drugoe napravlenie  
+  
+5. Vse endpoints trebuyut avtorizatsii (krome /auth/login)  
+   Zagolovok: Authorization: Bearer {token}  
+  
+================================================================================  
+PERECHISLENIYA (ENUMS):  
+-----------------------  
+StudentStatus: study, expelled, academic_leave  
+OrderType: enrollment, expulsion, next_course, academic_leave, transfer_direction  
+ExpulsionReason: debts, health, personal_reason, own  
+AcademicLeaveReason: health, personal/family  
+ControlType: test, exam, course work  
+EducationForm: full-time, part-time, extramural  
+  
+================================================================================  
+KONTAKTY:  
+---------  
+Student: Elena  
+Distsiplina: PiAPS (Proektirovanie i arkhitektura programnykh sistem)  
+Tema: Universitet. Uchet kontingenta.  
+================================================================================ 

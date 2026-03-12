@@ -1,0 +1,408 @@
+namespace UniversityContingent.Views
+{
+    partial class MainForm
+    {
+        /// <summary>
+        /// Required designer variable.
+        /// </summary>
+        private System.ComponentModel.IContainer components = null;
+
+        /// <summary>
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+        #region Windows Form Designer generated code
+
+        /// <summary>
+        /// Required method for Designer support - do not modify
+        /// the contents of this method with the code editor.
+        /// </summary>
+        private void InitializeComponent()
+        {
+            menuStrip = new MenuStrip();
+            fileToolStripMenuItem = new ToolStripMenuItem();
+            exitToolStripMenuItem = new ToolStripMenuItem();
+            справочникиToolStripMenuItem = new ToolStripMenuItem();
+            факультетыToolStripMenuItem = new ToolStripMenuItem();
+            направленияToolStripMenuItem = new ToolStripMenuItem();
+            группыToolStripMenuItem = new ToolStripMenuItem();
+            студентыToolStripMenuItem = new ToolStripMenuItem();
+            приказыToolStripMenuItem = new ToolStripMenuItem();
+            отчетыToolStripMenuItem = new ToolStripMenuItem();
+            toolStripMenuItem1 = new ToolStripMenuItem();
+            panelTop = new Panel();
+            lblUserName = new Label();
+            lblRole = new Label();
+            btnLogout = new Button();
+            panelContent = new Panel();
+            tabControl = new TabControl();
+            tabStudents = new TabPage();
+            dgvStudents = new DataGridView();
+            panelFilters = new Panel();
+            btnRefresh = new Button();
+            cmbGroups = new ComboBox();
+            cmbDirections = new ComboBox();
+            cmbFaculties = new ComboBox();
+            lblGroups = new Label();
+            lblDirections = new Label();
+            lblFaculties = new Label();
+            lblStatus = new Label();
+            menuStrip.SuspendLayout();
+            panelTop.SuspendLayout();
+            panelContent.SuspendLayout();
+            tabControl.SuspendLayout();
+            tabStudents.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)dgvStudents).BeginInit();
+            panelFilters.SuspendLayout();
+            SuspendLayout();
+            // 
+            // menuStrip
+            // 
+            menuStrip.ImageScalingSize = new Size(20, 20);
+            menuStrip.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem, справочникиToolStripMenuItem, студентыToolStripMenuItem, приказыToolStripMenuItem, отчетыToolStripMenuItem });
+            menuStrip.Location = new Point(0, 0);
+            menuStrip.Padding = new Padding(7, 3, 0, 3);
+            menuStrip.Size = new Size(1239, 30);
+            menuStrip.TabIndex = 0;
+            // 
+            // fileToolStripMenuItem
+            // 
+            fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { exitToolStripMenuItem });
+            fileToolStripMenuItem.Name = "fileToolStripMenuItem";
+            fileToolStripMenuItem.Size = new Size(59, 24);
+            fileToolStripMenuItem.Text = "Файл";
+            // 
+            // exitToolStripMenuItem
+            // 
+            exitToolStripMenuItem.Name = "exitToolStripMenuItem";
+            exitToolStripMenuItem.Size = new Size(136, 26);
+            exitToolStripMenuItem.Text = "Выход";
+            exitToolStripMenuItem.Click += exitToolStripMenuItem_Click;
+            // 
+            // справочникиToolStripMenuItem
+            // 
+            справочникиToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { факультетыToolStripMenuItem, направленияToolStripMenuItem, группыToolStripMenuItem });
+            справочникиToolStripMenuItem.Name = "справочникиToolStripMenuItem";
+            справочникиToolStripMenuItem.Size = new Size(117, 24);
+            справочникиToolStripMenuItem.Text = "Справочники";
+            // 
+            // факультетыToolStripMenuItem
+            // 
+            факультетыToolStripMenuItem.Name = "факультетыToolStripMenuItem";
+            факультетыToolStripMenuItem.Size = new Size(187, 26);
+            факультетыToolStripMenuItem.Text = "Факультеты";
+            факультетыToolStripMenuItem.Click += факультетыToolStripMenuItem_Click;
+            // 
+            // направленияToolStripMenuItem
+            // 
+            направленияToolStripMenuItem.Name = "направленияToolStripMenuItem";
+            направленияToolStripMenuItem.Size = new Size(187, 26);
+            направленияToolStripMenuItem.Text = "Направления";
+            направленияToolStripMenuItem.Click += направленияToolStripMenuItem_Click;
+            // 
+            // группыToolStripMenuItem
+            // 
+            группыToolStripMenuItem.Name = "группыToolStripMenuItem";
+            группыToolStripMenuItem.Size = new Size(187, 26);
+            группыToolStripMenuItem.Text = "Группы";
+            группыToolStripMenuItem.Click += группыToolStripMenuItem_Click;
+            // 
+            // студентыToolStripMenuItem
+            // 
+            студентыToolStripMenuItem.Name = "студентыToolStripMenuItem";
+            студентыToolStripMenuItem.Size = new Size(87, 24);
+            студентыToolStripMenuItem.Text = "Студенты";
+            студентыToolStripMenuItem.Click += студентыToolStripMenuItem_Click;
+            // 
+            // приказыToolStripMenuItem
+            // 
+            приказыToolStripMenuItem.Name = "приказыToolStripMenuItem";
+            приказыToolStripMenuItem.Size = new Size(85, 24);
+            приказыToolStripMenuItem.Text = "Приказы";
+            приказыToolStripMenuItem.Click += приказыToolStripMenuItem_Click;
+            // 
+            // отчетыToolStripMenuItem
+            // 
+            отчетыToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { toolStripMenuItem1 });
+            отчетыToolStripMenuItem.Name = "отчетыToolStripMenuItem";
+            отчетыToolStripMenuItem.Size = new Size(73, 24);
+            отчетыToolStripMenuItem.Text = "Отчеты";
+            // 
+            // toolStripMenuItem1
+            // 
+            toolStripMenuItem1.Name = "toolStripMenuItem1";
+            toolStripMenuItem1.Size = new Size(172, 26);
+            toolStripMenuItem1.Text = "Контингент";
+            toolStripMenuItem1.Click += toolStripMenuItem1_Click;
+            // 
+            // panelTop
+            // 
+            panelTop.BackColor = Color.FromArgb(0, 120, 215);
+            panelTop.Controls.Add(lblUserName);
+            panelTop.Controls.Add(lblRole);
+            panelTop.Controls.Add(btnLogout);
+            panelTop.Dock = DockStyle.Top;
+            panelTop.Location = new Point(0, 30);
+            panelTop.Margin = new Padding(3, 4, 3, 4);
+            panelTop.Name = "panelTop";
+            panelTop.Size = new Size(1239, 67);
+            panelTop.TabIndex = 1;
+            // 
+            // lblUserName
+            // 
+            lblUserName.AutoSize = true;
+            lblUserName.Font = new Font("Segoe UI", 10F, FontStyle.Bold);
+            lblUserName.ForeColor = Color.White;
+            lblUserName.Location = new Point(11, 16);
+            lblUserName.Name = "lblUserName";
+            lblUserName.Size = new Size(0, 23);
+            lblUserName.TabIndex = 0;
+            // 
+            // lblRole
+            // 
+            lblRole.AutoSize = true;
+            lblRole.Font = new Font("Segoe UI", 9F);
+            lblRole.ForeColor = Color.WhiteSmoke;
+            lblRole.Location = new Point(11, 43);
+            lblRole.Name = "lblRole";
+            lblRole.Size = new Size(0, 20);
+            lblRole.TabIndex = 1;
+            // 
+            // btnLogout
+            // 
+            btnLogout.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnLogout.BackColor = Color.Transparent;
+            btnLogout.FlatAppearance.BorderColor = Color.White;
+            btnLogout.FlatStyle = FlatStyle.Flat;
+            btnLogout.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            btnLogout.ForeColor = Color.White;
+            btnLogout.Location = new Point(1120, 13);
+            btnLogout.Margin = new Padding(3, 4, 3, 4);
+            btnLogout.Name = "btnLogout";
+            btnLogout.Size = new Size(106, 40);
+            btnLogout.TabIndex = 2;
+            btnLogout.Text = "Выход";
+            btnLogout.UseVisualStyleBackColor = false;
+            btnLogout.Click += btnLogout_Click;
+            // 
+            // panelContent
+            // 
+            panelContent.Controls.Add(tabControl);
+            panelContent.Dock = DockStyle.Fill;
+            panelContent.Location = new Point(0, 97);
+            panelContent.Margin = new Padding(3, 4, 3, 4);
+            panelContent.Name = "panelContent";
+            panelContent.Size = new Size(1239, 694);
+            panelContent.TabIndex = 2;
+            // 
+            // tabControl
+            // 
+            tabControl.Controls.Add(tabStudents);
+            tabControl.Dock = DockStyle.Fill;
+            tabControl.Location = new Point(0, 0);
+            tabControl.Margin = new Padding(3, 4, 3, 4);
+            tabControl.Name = "tabControl";
+            tabControl.SelectedIndex = 0;
+            tabControl.Size = new Size(1239, 694);
+            tabControl.TabIndex = 0;
+            // 
+            // tabStudents
+            // 
+            tabStudents.Controls.Add(dgvStudents);
+            tabStudents.Controls.Add(panelFilters);
+            tabStudents.Controls.Add(lblStatus);
+            tabStudents.Location = new Point(4, 29);
+            tabStudents.Margin = new Padding(3, 4, 3, 4);
+            tabStudents.Name = "tabStudents";
+            tabStudents.Padding = new Padding(3, 4, 3, 4);
+            tabStudents.Size = new Size(1231, 661);
+            tabStudents.TabIndex = 0;
+            tabStudents.Text = "Студенты";
+            tabStudents.UseVisualStyleBackColor = true;
+            // 
+            // dgvStudents
+            // 
+            dgvStudents.AllowUserToAddRows = false;
+            dgvStudents.AllowUserToDeleteRows = false;
+            dgvStudents.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dgvStudents.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dgvStudents.Dock = DockStyle.Fill;
+            dgvStudents.Location = new Point(3, 78);
+            dgvStudents.Margin = new Padding(3, 4, 3, 4);
+            dgvStudents.MultiSelect = false;
+            dgvStudents.Name = "dgvStudents";
+            dgvStudents.ReadOnly = true;
+            dgvStudents.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dgvStudents.Size = new Size(1225, 546);
+            dgvStudents.TabIndex = 2;
+            // 
+            // panelFilters
+            // 
+            panelFilters.Controls.Add(btnRefresh);
+            panelFilters.Controls.Add(cmbGroups);
+            panelFilters.Controls.Add(cmbDirections);
+            panelFilters.Controls.Add(cmbFaculties);
+            panelFilters.Controls.Add(lblGroups);
+            panelFilters.Controls.Add(lblDirections);
+            panelFilters.Controls.Add(lblFaculties);
+            panelFilters.Dock = DockStyle.Top;
+            panelFilters.Location = new Point(3, 4);
+            panelFilters.Margin = new Padding(3, 4, 3, 4);
+            panelFilters.Name = "panelFilters";
+            panelFilters.Size = new Size(1225, 74);
+            panelFilters.TabIndex = 1;
+            // 
+            // btnRefresh
+            // 
+            btnRefresh.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnRefresh.BackColor = Color.FromArgb(0, 120, 215);
+            btnRefresh.FlatAppearance.BorderSize = 0;
+            btnRefresh.FlatStyle = FlatStyle.Flat;
+            btnRefresh.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            btnRefresh.ForeColor = Color.White;
+            btnRefresh.Location = new Point(1109, 20);
+            btnRefresh.Margin = new Padding(3, 4, 3, 4);
+            btnRefresh.Name = "btnRefresh";
+            btnRefresh.Size = new Size(106, 40);
+            btnRefresh.TabIndex = 6;
+            btnRefresh.Text = "Обновить";
+            btnRefresh.UseVisualStyleBackColor = false;
+            btnRefresh.Click += btnRefresh_Click;
+            // 
+            // cmbGroups
+            // 
+            cmbGroups.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbGroups.Location = new Point(613, 26);
+            cmbGroups.Margin = new Padding(3, 4, 3, 4);
+            cmbGroups.Name = "cmbGroups";
+            cmbGroups.Size = new Size(244, 28);
+            cmbGroups.TabIndex = 5;
+            // 
+            // cmbDirections
+            // 
+            cmbDirections.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbDirections.Location = new Point(308, 26);
+            cmbDirections.Margin = new Padding(3, 4, 3, 4);
+            cmbDirections.Name = "cmbDirections";
+            cmbDirections.Size = new Size(244, 28);
+            cmbDirections.TabIndex = 4;
+            cmbDirections.SelectedIndexChanged += cmbFaculties_SelectedIndexChanged;
+            // 
+            // cmbFaculties
+            // 
+            cmbFaculties.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbFaculties.Location = new Point(79, 26);
+            cmbFaculties.Margin = new Padding(3, 4, 3, 4);
+            cmbFaculties.Name = "cmbFaculties";
+            cmbFaculties.Size = new Size(208, 28);
+            cmbFaculties.TabIndex = 3;
+            cmbFaculties.SelectedIndexChanged += cmbFaculties_SelectedIndexChanged;
+            // 
+            // lblGroups
+            // 
+            lblGroups.AutoSize = true;
+            lblGroups.Location = new Point(613, 6);
+            lblGroups.Name = "lblGroups";
+            lblGroups.Size = new Size(63, 20);
+            lblGroups.TabIndex = 2;
+            lblGroups.Text = "Группы";
+            // 
+            // lblDirections
+            // 
+            lblDirections.AutoSize = true;
+            lblDirections.Location = new Point(308, 6);
+            lblDirections.Name = "lblDirections";
+            lblDirections.Size = new Size(110, 20);
+            lblDirections.TabIndex = 1;
+            lblDirections.Text = "Направления";
+            // 
+            // lblFaculties
+            // 
+            lblFaculties.AutoSize = true;
+            lblFaculties.Location = new Point(79, 6);
+            lblFaculties.Name = "lblFaculties";
+            lblFaculties.Size = new Size(92, 20);
+            lblFaculties.TabIndex = 0;
+            lblFaculties.Text = "Факультеты";
+            // 
+            // lblStatus
+            // 
+            lblStatus.AutoSize = true;
+            lblStatus.Dock = DockStyle.Bottom;
+            lblStatus.Location = new Point(3, 624);
+            lblStatus.Name = "lblStatus";
+            lblStatus.Padding = new Padding(10);
+            lblStatus.Size = new Size(149, 33);
+            lblStatus.TabIndex = 3;
+            lblStatus.Text = "Загружено студентов: 0";
+            // 
+            // MainForm
+            // 
+            AutoScaleDimensions = new SizeF(8F, 20F);
+            AutoScaleMode = AutoScaleMode.Font;
+            ClientSize = new Size(1239, 791);
+            Controls.Add(panelContent);
+            Controls.Add(panelTop);
+            Controls.Add(menuStrip);
+            MainMenuStrip = menuStrip;
+            Name = "MainForm";
+            StartPosition = FormStartPosition.CenterScreen;
+            Text = "University Contingent - Учёт контингента";
+            WindowState = FormWindowState.Maximized;
+            Load += MainForm_Load;
+            menuStrip.ResumeLayout(false);
+            menuStrip.PerformLayout();
+            panelTop.ResumeLayout(false);
+            panelTop.PerformLayout();
+            panelContent.ResumeLayout(false);
+            tabControl.ResumeLayout(false);
+            tabStudents.ResumeLayout(false);
+            tabStudents.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)dgvStudents).EndInit();
+            panelFilters.ResumeLayout(false);
+            panelFilters.PerformLayout();
+            ResumeLayout(false);
+            PerformLayout();
+        }
+
+        #endregion
+
+        private MenuStrip menuStrip;
+        private ToolStripMenuItem fileToolStripMenuItem;
+        private ToolStripMenuItem exitToolStripMenuItem;
+        private ToolStripMenuItem справочникиToolStripMenuItem;
+        private ToolStripMenuItem факультетыToolStripMenuItem;
+        private ToolStripMenuItem направленияToolStripMenuItem;
+        private ToolStripMenuItem группыToolStripMenuItem;
+        private ToolStripMenuItem студентыToolStripMenuItem;
+        private ToolStripMenuItem приказыToolStripMenuItem;
+        private ToolStripMenuItem отчетыToolStripMenuItem;
+        private ToolStripMenuItem toolStripMenuItem1;
+        private Panel panelTop;
+        private Label lblUserName;
+        private Label lblRole;
+        private Button btnLogout;
+        private Panel panelContent;
+        private TabControl tabControl;
+        private TabPage tabStudents;
+        private DataGridView dgvStudents;
+        private Panel panelFilters;
+        private ComboBox cmbGroups;
+        private ComboBox cmbDirections;
+        private ComboBox cmbFaculties;
+        private Label lblGroups;
+        private Label lblDirections;
+        private Label lblFaculties;
+        private Button btnRefresh;
+        private Label lblStatus;
+    }
+}

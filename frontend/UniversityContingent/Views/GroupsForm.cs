@@ -36,8 +36,7 @@ namespace UniversityContingent.Views
                     g.Id,
                     g.Name,
                     Направление = _directions.FirstOrDefault(d => d.Id == g.DirectionId)?.Name ?? "Не указано",
-                    g.Course,
-                    g.Year
+                    g.Course
                 }).ToList();
 
                 lblStatus.Text = $"Загружено групп: {_groups.Count}";
@@ -72,7 +71,14 @@ namespace UniversityContingent.Views
                 return;
             }
 
-            var id = dgvGroups.SelectedRows[0].Cells["Id"].Value?.ToString();
+            var idStr = dgvGroups.SelectedRows[0].Cells["Id"].Value?.ToString();
+            if (!Guid.TryParse(idStr, out var id))
+            {
+                MessageBox.Show("Неверный ID группы", "Ошибка",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            
             var group = _groups.FirstOrDefault(g => g.Id == id);
 
             if (group != null)
@@ -99,8 +105,8 @@ namespace UniversityContingent.Views
 
             if (result == DialogResult.Yes)
             {
-                var id = dgvGroups.SelectedRows[0].Cells["Id"].Value?.ToString();
-                if (!string.IsNullOrEmpty(id))
+                var idStr = dgvGroups.SelectedRows[0].Cells["Id"].Value?.ToString();
+                if (Guid.TryParse(idStr, out var id))
                 {
                     var success = await _apiService.DeleteGroupAsync(id);
                     if (success)

@@ -17,15 +17,15 @@ namespace UniversityContingent.Views
             _apiService = apiService;
             _isEdit = direction != null;
 
-            _viewModel = direction == null 
-                ? new DirectionEditViewModel() 
+            _viewModel = direction == null
+                ? new DirectionEditViewModel()
                 : new DirectionEditViewModel
                 {
                     Id = direction.Id,
                     Name = direction.Name ?? string.Empty,
                     Code = direction.Code ?? string.Empty,
                     FacultyId = direction.FacultyId,
-                    EducationForm = direction.EducationForm
+                    StudyDurationYears = direction.StudyDurationYears
                 };
 
             Text = _isEdit ? "Редактирование направления" : "Добавление направления";
@@ -51,24 +51,24 @@ namespace UniversityContingent.Views
         {
             txtName.Text = _viewModel.Name;
             txtCode.Text = _viewModel.Code;
+            numStudyDuration.Value = _viewModel.StudyDurationYears > 0 ? _viewModel.StudyDurationYears : 4;
             
-            if (!string.IsNullOrEmpty(_viewModel.FacultyId) && _faculties.Any())
+            if (_viewModel.FacultyId != Guid.Empty && _faculties.Any())
             {
                 cmbFaculty.SelectedValue = _viewModel.FacultyId;
             }
-
-            cmbEducationForm.DataSource = Enum.GetValues(typeof(EducationForm));
-            cmbEducationForm.SelectedItem = _viewModel.EducationForm;
+            else if (_faculties.Any())
+            {
+                cmbFaculty.SelectedIndex = 0;
+            }
         }
 
         private void SaveViewModel()
         {
             _viewModel.Name = txtName.Text.Trim();
             _viewModel.Code = txtCode.Text.Trim();
-            _viewModel.FacultyId = cmbFaculty.SelectedValue?.ToString() ?? string.Empty;
-            _viewModel.EducationForm = cmbEducationForm.SelectedItem is EducationForm form 
-                ? form 
-                : EducationForm.full_time;
+            _viewModel.FacultyId = cmbFaculty.SelectedValue is Guid facultyId ? facultyId : Guid.Empty;
+            _viewModel.StudyDurationYears = (int)numStudyDuration.Value;
         }
 
         private async void btnSave_Click(object sender, EventArgs e)
@@ -83,7 +83,7 @@ namespace UniversityContingent.Views
                 return;
             }
 
-            if (string.IsNullOrEmpty(_viewModel.FacultyId))
+            if (_viewModel.FacultyId == Guid.Empty)
             {
                 MessageBox.Show("Выберите факультет", "Ошибка", 
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -101,13 +101,7 @@ namespace UniversityContingent.Views
                     Name = _viewModel.Name,
                     Code = _viewModel.Code,
                     FacultyId = _viewModel.FacultyId,
-                    EducationFormRaw = _viewModel.EducationForm switch
-                    {
-                        EducationForm.full_time => "full_time",
-                        EducationForm.part_time => "part_time",
-                        EducationForm.extramural => "extramural",
-                        _ => "full_time"
-                    }
+                    StudyDurationYears = 4
                 };
 
                 Direction? result;
@@ -119,7 +113,7 @@ namespace UniversityContingent.Views
                 {
                     result = await _apiService.CreateDirectionAsync(direction);
                 }
-
+                
                 if (result != null)
                 {
                     ResultViewModel = new DirectionEditViewModel
@@ -128,7 +122,7 @@ namespace UniversityContingent.Views
                         Name = result.Name ?? string.Empty,
                         Code = result.Code ?? string.Empty,
                         FacultyId = result.FacultyId,
-                        EducationForm = result.EducationForm
+                        StudyDurationYears = result.StudyDurationYears
                     };
                     DialogResult = DialogResult.OK;
                     Close();

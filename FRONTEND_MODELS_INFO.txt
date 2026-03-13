@@ -1,0 +1,115 @@
+================================================================================  
+MODELI DANNYKH DLYA FRONTENDA (C# Windows Forms)  
+================================================================================  
+  
+1. FACULTY (Fakultety)  
+----------------------  
+Polya:  
+- id: Guid (PK)  
+- name: string  
+- short_name: string  
+  
+C# Model:  
+public class Faculty  
+{  
+    public Guid id { get; set; }  
+    public string name { get; set; } = \"\";  
+    public string short_name { get; set; } = \"\";  
+} 
+  
+2. DIRECTION (Nappravleniya)  
+----------------------------  
+Polya:  
+- id: Guid  
+- name: string  
+- code: string (naprimer \"09.03.02\")  
+- study_duration_years: int  
+- faculty_id: Guid (FK)  
+  
+C# Model:  
+public class Direction  
+{  
+    public Guid id { get; set; }  
+    public string name { get; set; } = \"\";  
+    public string code { get; set; } = \"\";  
+    public int study_duration_years { get; set; }  
+    public Guid faculty_id { get; set; }  
+}  
+  
+3. GROUP (Gruppy)  
+-----------------  
+Polya:  
+- id: Guid  
+- name: string (naprimer \"PI-11\")  
+- course: int (1, 2, 3, 4)  
+- direction_id: Guid (FK)  
+  
+C# Model:  
+public class Group  
+{  
+    public Guid id { get; set; }  
+    public string name { get; set; } = \"\";  
+    public int course { get; set; }  
+    public Guid direction_id { get; set; }  
+} 
+  
+4. STUDENT (Studenty)  
+----------------------  
+Polya:  
+- id: Guid  
+- name: string  
+- last_name: string  
+- patronymic: string (nullable)  
+- study_book_number: int  
+- enrollment_date: DateOnly?  
+- expulsion_date: DateOnly?  
+- status: string (\"study\", \"expelled\", \"academic_leave\")  
+- group_id: Guid (FK)  
+  
+C# Model:  
+public class Student  
+{  
+    public Guid id { get; set; }  
+    public string name { get; set; } = \"\";  
+    public string last_name { get; set; } = \"\";  
+    public string? patronymic { get; set; }  
+    public int study_book_number { get; set; }  
+    public DateOnly? enrollment_date { get; set; }  
+    public DateOnly? expulsion_date { get; set; }  
+    public string status { get; set; } = \"study\";  
+    public Guid group_id { get; set; }  
+}  
+  
+VAZHNO: Studenty sozdayutsya TOLKO cherez prikaz o zachislenii!  
+Ispolzovat: POST /special-orders/enrollment-with-students 
+  
+5. ORDER (Prikazy)  
+-------------------  
+Polya:  
+- id: Guid  
+- number: string  
+- date: DateOnly  
+- type: string (\"enrollment\", \"expulsion\", \"next_course\", \"academic_leave\", \"transfer_direction\")  
+- reason: string  
+  
+C# Model:  
+public class Order  
+{  
+    public Guid id { get; set; }  
+    public string number { get; set; } = \"\";  
+    public DateOnly date { get; set; }  
+    public string type { get; set; } = \"\";  
+    public string reason { get; set; } = \"\";  
+}  
+  
+6. PERECHISLENIYA (ENUMS):  
+--------------------------  
+StudentStatus: study, expelled, academic_leave  
+OrderType: enrollment, expulsion, next_course, academic_leave, transfer_direction  
+ExpulsionReason: debts, health, personal_reason, own  
+AcademicLeaveReason: health, personal/family  
+ControlType: test, exam, course work  
+EducationForm: full-time, part-time, extramural  
+  
+Poluchit vse: GET /enums/  
+================================================================================ 

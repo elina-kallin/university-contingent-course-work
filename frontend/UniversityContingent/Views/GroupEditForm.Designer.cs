@@ -18,16 +18,13 @@ namespace UniversityContingent.Views
             lblName = new Label();
             lblDirection = new Label();
             lblCourse = new Label();
-            lblYear = new Label();
             txtName = new TextBox();
             cmbDirection = new ComboBox();
             numCourse = new NumericUpDown();
-            numYear = new NumericUpDown();
             btnSave = new Button();
             btnCancel = new Button();
             panelButtons = new FlowLayoutPanel();
             ((System.ComponentModel.ISupportInitialize)numCourse).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)numYear).BeginInit();
             panelButtons.SuspendLayout();
             SuspendLayout();
             // 
@@ -58,15 +55,6 @@ namespace UniversityContingent.Views
             lblCourse.TabIndex = 2;
             lblCourse.Text = "Курс";
             // 
-            // lblYear
-            // 
-            lblYear.AutoSize = true;
-            lblYear.Location = new Point(20, 170);
-            lblYear.Name = "lblYear";
-            lblYear.Size = new Size(81, 15);
-            lblYear.TabIndex = 3;
-            lblYear.Text = "Год набора";
-            // 
             // txtName
             // 
             txtName.Location = new Point(20, 38);
@@ -91,16 +79,6 @@ namespace UniversityContingent.Views
             numCourse.Size = new Size(100, 23);
             numCourse.TabIndex = 6;
             numCourse.Value = new decimal(new int[] { 1, 0, 0, 0 });
-            // 
-            // numYear
-            // 
-            numYear.Location = new Point(20, 188);
-            numYear.Maximum = new decimal(new int[] { 2030, 0, 0, 0 });
-            numYear.Minimum = new decimal(new int[] { 2000, 0, 0, 0 });
-            numYear.Name = "numYear";
-            numYear.Size = new Size(100, 23);
-            numYear.TabIndex = 7;
-            numYear.Value = new decimal(new int[] { 2024, 0, 0, 0 });
             // 
             // btnSave
             // 
@@ -140,7 +118,7 @@ namespace UniversityContingent.Views
             panelButtons.Controls.Add(btnCancel);
             panelButtons.Dock = DockStyle.Bottom;
             panelButtons.FlowDirection = FlowDirection.RightToLeft;
-            panelButtons.Location = new Point(0, 240);
+            panelButtons.Location = new Point(0, 200);
             panelButtons.Name = "panelButtons";
             panelButtons.Padding = new Padding(20, 10, 20, 10);
             panelButtons.Size = new Size(464, 60);
@@ -150,13 +128,11 @@ namespace UniversityContingent.Views
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(464, 300);
+            ClientSize = new Size(464, 260);
             Controls.Add(panelButtons);
-            Controls.Add(numYear);
             Controls.Add(numCourse);
             Controls.Add(cmbDirection);
             Controls.Add(txtName);
-            Controls.Add(lblYear);
             Controls.Add(lblCourse);
             Controls.Add(lblDirection);
             Controls.Add(lblName);
@@ -169,7 +145,6 @@ namespace UniversityContingent.Views
             Text = "GroupEditForm";
             Load += GroupEditForm_Load;
             ((System.ComponentModel.ISupportInitialize)numCourse).EndInit();
-            ((System.ComponentModel.ISupportInitialize)numYear).EndInit();
             panelButtons.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
@@ -178,11 +153,9 @@ namespace UniversityContingent.Views
         private Label lblName;
         private Label lblDirection;
         private Label lblCourse;
-        private Label lblYear;
         private TextBox txtName;
         private ComboBox cmbDirection;
         private NumericUpDown numCourse;
-        private NumericUpDown numYear;
         private Button btnSave;
         private Button btnCancel;
         private FlowLayoutPanel panelButtons;

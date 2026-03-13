@@ -33,26 +33,6 @@ namespace UniversityContingent.Views
                 var groups = await _apiService.GetGroupsAsync();
                 var students = await _apiService.GetStudentsAsync();
 
-                // Отладочный вывод
-                var debugInfo = $"Faculties: {faculties?.Count ?? 0}\n" +
-                               $"Directions: {directions?.Count ?? 0}\n" +
-                               $"Groups: {groups?.Count ?? 0}\n" +
-                               $"Students: {students?.Count ?? 0}";
-                
-                if (faculties != null && faculties.Count > 0)
-                {
-                    var f = faculties[0];
-                    debugInfo += $"\n\nFirst Faculty: Id={f.Id}, Name={f.Name}, ShortName={f.ShortName}";
-                }
-                
-                if (directions != null && directions.Count > 0)
-                {
-                    var d = directions[0];
-                    debugInfo += $"\n\nFirst Direction: Id={d.Id}, Name={d.Name}, Code={d.Code}, FacultyId={d.FacultyId}, EducationFormRaw={d.EducationFormRaw}";
-                }
-                
-                MessageBox.Show(debugInfo, "DEBUG INFO", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
                 // Заполняем ComboBox
                 cmbFaculties.DataSource = faculties?.Select(f => new { f.Id, f.Name }).ToList();
                 cmbFaculties.DisplayMember = "Name";
@@ -70,8 +50,8 @@ namespace UniversityContingent.Views
                 dgvStudents.DataSource = students?.Select(s => new
                 {
                     s.Id,
-                    s.FullName,
-                    s.BirthDate,
+                    ФИО = s.FullName,
+                    s.StudyBookNumber,
                     Группа = groups?.FirstOrDefault(g => g.Id == s.GroupId)?.Name ?? "Не указана",
                     s.EnrollmentDate,
                     Статус = s.Status switch
@@ -148,8 +128,9 @@ namespace UniversityContingent.Views
         // Меню - Приказы
         private void приказыToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Форма приказов в разработке", "Информация",
-                MessageBoxButtons.OK, MessageBoxIcon.Information);
+            using var form = new OrdersForm(_apiService);
+            form.ShowDialog();
+            _ = LoadDataAsync(); // Обновляем данные после закрытия
         }
 
         // Меню - Отчеты

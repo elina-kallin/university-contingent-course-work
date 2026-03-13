@@ -8,34 +8,36 @@ namespace UniversityContingent.Controller.Api
     public interface IApiService
     {
         string? AccessToken { get; set; }
-        
+
         // Авторизация
         Task<LoginResponse?> LoginAsync(string login, string password);
         Task LogoutAsync();
-        
+
         // Справочники
         Task<List<Faculty>?> GetFacultiesAsync();
         Task<List<Direction>?> GetDirectionsAsync();
         Task<List<Group>?> GetGroupsAsync();
         Task<List<Student>?> GetStudentsAsync();
-        
+
         // CRUD Направления
         Task<Direction?> CreateDirectionAsync(Direction direction);
-        Task<Direction?> UpdateDirectionAsync(string id, Direction direction);
-        Task<bool> DeleteDirectionAsync(string id);
-        
+        Task<Direction?> UpdateDirectionAsync(Guid id, Direction direction);
+        Task<bool> DeleteDirectionAsync(Guid id);
+
         // CRUD Группы
         Task<Group?> CreateGroupAsync(Group group);
-        Task<Group?> UpdateGroupAsync(string id, Group group);
-        Task<bool> DeleteGroupAsync(string id);
-        
+        Task<Group?> UpdateGroupAsync(Guid id, Group group);
+        Task<bool> DeleteGroupAsync(Guid id);
+
         // Студенты
-        Task<Student?> GetStudentAsync(string id);
-        
+        Task<Student?> GetStudentAsync(Guid id);
+
         // Приказы
-        Task<Order?> CreateEnrollmentOrderAsync(EnrollmentOrderData data);
-        Task<Order?> GetOrderAsync(int id);
-        Task<string?> GetOrderPrintHtmlAsync(int id);
+        Task<Order?> CreateEnrollmentOrderAsync(EnrollmentOrderWithStudentsCreate data);
+        Task<Order?> GetOrderAsync(Guid id);
+        Task<string?> GetOrderPrintHtmlAsync(Guid id);
+        Task<List<Order>?> GetOrdersAsync();
+        Task<Order?> CreateOrderAsync(Order order);
     }
 
     /// <summary>
@@ -52,13 +54,13 @@ namespace UniversityContingent.Controller.Api
         public ApiService(string baseUrl)
         {
             _baseUrl = baseUrl.TrimEnd('/');
-            
-            // Отключаем автоматическое следование за редиректами
+
+            // Отключаем автоматические редиректы для контроля заголовков
             _httpClientHandler = new HttpClientHandler
             {
                 AllowAutoRedirect = false
             };
-            
+
             _httpClient = new HttpClient(_httpClientHandler)
             {
                 BaseAddress = new Uri(_baseUrl),
@@ -71,14 +73,13 @@ namespace UniversityContingent.Controller.Api
         /// </summary>
         public void SetAuthHeader()
         {
+            // Очищаем старые заголовки
+            _httpClient.DefaultRequestHeaders.Authorization = null;
+            
             if (!string.IsNullOrEmpty(AccessToken))
             {
                 _httpClient.DefaultRequestHeaders.Authorization =
                     new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", AccessToken);
-            }
-            else
-            {
-                _httpClient.DefaultRequestHeaders.Authorization = null;
             }
         }
 
@@ -105,40 +106,26 @@ namespace UniversityContingent.Controller.Api
             try
             {
                 SetAuthHeader();
-                var response = await _httpClient.GetAsync(endpoint);
-                
-                // Обрабатываем редирект вручную
-                if (response.StatusCode == System.Net.HttpStatusCode.Redirect || 
+                var request = new HttpRequestMessage(HttpMethod.Get, endpoint);
+                var response = await _httpClient.SendAsync(request);
+
+                // Обрабатываем редирект вручную с сохранением заголовка
+                if (response.StatusCode == System.Net.HttpStatusCode.Redirect ||
                     response.StatusCode == System.Net.HttpStatusCode.TemporaryRedirect)
                 {
                     var location = response.Headers.Location?.ToString();
                     if (!string.IsNullOrEmpty(location))
                     {
                         var redirectUrl = location.StartsWith("http") ? location : _baseUrl + location;
+                        Console.WriteLine($"[DEBUG] GET redirect to: {redirectUrl}");
+                        
                         using var redirectRequest = new HttpRequestMessage(HttpMethod.Get, redirectUrl);
-                        SetAuthHeader();
-                        var redirectResponse = await _httpClient.SendAsync(redirectRequest);
-                        if (redirectResponse.IsSuccessStatusCode)
-                        {
-                            var content = await redirectResponse.Content.ReadAsStringAsync();
-                            Console.WriteLine($"[DEBUG] GET {endpoint} (redirect): {content}");
-                            try
-                            {
-                                return System.Text.Json.JsonSerializer.Deserialize<T>(content);
-                            }
-                            catch (Exception ex)
-                            {
-                                Console.WriteLine($"[DEBUG] Deserialize error: {ex.Message}");
-                                return default;
-                            }
-                        }
-                        else
-                        {
-                            Console.WriteLine($"[DEBUG] Redirect failed: {redirectResponse.StatusCode}");
-                        }
+                        SetAuthHeader(); // Сохраняем заголовок авторизации
+                        response = await _httpClient.SendAsync(redirectRequest);
                     }
                 }
-                else if (response.IsSuccessStatusCode)
+
+                if (response.IsSuccessStatusCode)
                 {
                     var content = await response.Content.ReadAsStringAsync();
                     Console.WriteLine($"[DEBUG] GET {endpoint}: {content}");
@@ -233,7 +220,24 @@ namespace UniversityContingent.Controller.Api
             try
             {
                 SetAuthHeader();
-                var response = await _httpClient.GetAsync(endpoint);
+                var request = new HttpRequestMessage(HttpMethod.Get, endpoint);
+                var response = await _httpClient.SendAsync(request);
+
+                // Обрабатываем редирект вручную с сохранением заголовка
+                if (response.StatusCode == System.Net.HttpStatusCode.Redirect ||
+                    response.StatusCode == System.Net.HttpStatusCode.TemporaryRedirect)
+                {
+                    var location = response.Headers.Location?.ToString();
+                    if (!string.IsNullOrEmpty(location))
+                    {
+                        var redirectUrl = location.StartsWith("http") ? location : _baseUrl + location;
+                        
+                        using var redirectRequest = new HttpRequestMessage(HttpMethod.Get, redirectUrl);
+                        SetAuthHeader();
+                        response = await _httpClient.SendAsync(redirectRequest);
+                    }
+                }
+
                 if (response.IsSuccessStatusCode)
                 {
                     return await response.Content.ReadAsStringAsync();
@@ -303,7 +307,7 @@ namespace UniversityContingent.Controller.Api
             return await GetAsync<List<Student>>("/students");
         }
 
-        public async Task<Student?> GetStudentAsync(string id)
+        public async Task<Student?> GetStudentAsync(Guid id)
         {
             return await GetAsync<Student>($"/students/{id}");
         }
@@ -313,12 +317,12 @@ namespace UniversityContingent.Controller.Api
             return await PostAsync<Direction>("/directions", direction);
         }
 
-        public async Task<Direction?> UpdateDirectionAsync(string id, Direction direction)
+        public async Task<Direction?> UpdateDirectionAsync(Guid id, Direction direction)
         {
             return await PutAsync<Direction>($"/directions/{id}", direction);
         }
 
-        public async Task<bool> DeleteDirectionAsync(string id)
+        public async Task<bool> DeleteDirectionAsync(Guid id)
         {
             return await DeleteAsync($"/directions/{id}");
         }
@@ -328,29 +332,98 @@ namespace UniversityContingent.Controller.Api
             return await PostAsync<Group>("/groups", group);
         }
 
-        public async Task<Group?> UpdateGroupAsync(string id, Group group)
+        public async Task<Group?> UpdateGroupAsync(Guid id, Group group)
         {
             return await PutAsync<Group>($"/groups/{id}", group);
         }
 
-        public async Task<bool> DeleteGroupAsync(string id)
+        public async Task<bool> DeleteGroupAsync(Guid id)
         {
             return await DeleteAsync($"/groups/{id}");
         }
 
-        public async Task<Order?> CreateEnrollmentOrderAsync(EnrollmentOrderData data)
+        public async Task<Order?> CreateEnrollmentOrderAsync(EnrollmentOrderWithStudentsCreate data)
         {
-            return await PostAsync<Order>("/special-orders/enrollment-with-students", data);
+            // Бэкенд делает редирект с / на без /, отправляем сразу без trailing slash
+            return await PostAsyncWithEmptyResponse<Order>("/special-orders/enrollment-with-students", data);
         }
 
-        public async Task<Order?> GetOrderAsync(int id)
+        private async Task<T?> PostAsyncWithEmptyResponse<T>(string endpoint, object data) where T : class, new()
+        {
+            try
+            {
+                SetAuthHeader();
+                var json = System.Text.Json.JsonSerializer.Serialize(data);
+                var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
+                
+                var request = new HttpRequestMessage(HttpMethod.Post, endpoint) { Content = content };
+                SetAuthHeader(); // Устанавливаем заголовок перед отправкой
+                
+                var response = await _httpClient.SendAsync(request);
+                
+                // Обрабатываем редирект вручную с сохранением заголовка и метода
+                if (response.StatusCode == System.Net.HttpStatusCode.Redirect ||
+                    response.StatusCode == System.Net.HttpStatusCode.TemporaryRedirect)
+                {
+                    var location = response.Headers.Location?.ToString();
+                    if (!string.IsNullOrEmpty(location))
+                    {
+                        // Преобразуем относительный URL в абсолютный
+                        var redirectUrl = location.StartsWith("http") ? location : _baseUrl + location;
+                        
+                        Console.WriteLine($"[DEBUG] Redirect to: {redirectUrl}");
+                        
+                        // Создаём новый POST запрос с тем же телом и заголовком
+                        using var redirectRequest = new HttpRequestMessage(HttpMethod.Post, redirectUrl);
+                        redirectRequest.Content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
+                        SetAuthHeader(); // Сохраняем заголовок авторизации
+                        
+                        response = await _httpClient.SendAsync(redirectRequest);
+                    }
+                }
+
+                var responseContent = await response.Content.ReadAsStringAsync();
+                
+                if (response.IsSuccessStatusCode)
+                {
+                    Console.WriteLine($"[DEBUG] POST {endpoint} success");
+                    // Если ответ пустой, возвращаем null (успешно)
+                    if (string.IsNullOrWhiteSpace(responseContent))
+                    {
+                        return null;
+                    }
+
+                    return System.Text.Json.JsonSerializer.Deserialize<T>(responseContent);
+                }
+
+                Console.WriteLine($"[DEBUG] POST {endpoint} failed: {response.StatusCode} - {responseContent}");
+                return default;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[DEBUG] POST {endpoint} error: {ex.Message}");
+                return default;
+            }
+        }
+
+        public async Task<Order?> GetOrderAsync(Guid id)
         {
             return await GetAsync<Order>($"/orders/{id}");
         }
 
-        public async Task<string?> GetOrderPrintHtmlAsync(int id)
+        public async Task<string?> GetOrderPrintHtmlAsync(Guid id)
         {
             return await GetRawAsync($"/orders/{id}/print");
+        }
+
+        public async Task<List<Order>?> GetOrdersAsync()
+        {
+            return await GetAsync<List<Order>>("/orders");
+        }
+
+        public async Task<Order?> CreateOrderAsync(Order order)
+        {
+            return await PostAsync<Order>("/orders", order);
         }
     }
 }

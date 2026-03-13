@@ -1,5 +1,4 @@
 using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
 using UniversityContingent.Models;
 
 namespace UniversityContingent.Controller.ViewModels
@@ -19,7 +18,7 @@ namespace UniversityContingent.Controller.ViewModels
         }
 
         [Browsable(false)]
-        public string Id { get; set; } = string.Empty;
+        public Guid Id { get; set; }
 
         [DisplayName("Наименование")]
         public string? Name { get; set; } = string.Empty;
@@ -41,11 +40,11 @@ namespace UniversityContingent.Controller.ViewModels
             Name = direction.Name ?? "Не указано";
             Code = direction.Code ?? "Не указано";
             FacultyId = direction.FacultyId;
-            EducationForm = direction.EducationForm;
+            StudyDurationYears = direction.StudyDurationYears;
         }
 
         [Browsable(false)]
-        public string Id { get; set; } = string.Empty;
+        public Guid Id { get; set; }
 
         [DisplayName("Наименование")]
         public string? Name { get; set; } = string.Empty;
@@ -54,19 +53,10 @@ namespace UniversityContingent.Controller.ViewModels
         public string? Code { get; set; } = string.Empty;
 
         [Browsable(false)]
-        public string FacultyId { get; set; } = string.Empty;
+        public Guid FacultyId { get; set; }
 
-        [DisplayName("Форма обучения")]
-        public string EducationFormName => EducationForm switch
-        {
-            EducationForm.full_time => "Очная",
-            EducationForm.part_time => "Заочная",
-            EducationForm.extramural => "Очно-заочная",
-            _ => "Не указано"
-        };
-
-        [Browsable(false)]
-        public EducationForm EducationForm { get; set; }
+        [DisplayName("Срок обучения (лет)")]
+        public int StudyDurationYears { get; set; }
     }
 
     /// <summary>
@@ -75,7 +65,7 @@ namespace UniversityContingent.Controller.ViewModels
     public class DirectionEditViewModel
     {
         [Browsable(false)]
-        public string Id { get; set; } = string.Empty;
+        public Guid Id { get; set; }
 
         [DisplayName("Наименование")]
         public string Name { get; set; } = string.Empty;
@@ -84,10 +74,10 @@ namespace UniversityContingent.Controller.ViewModels
         public string Code { get; set; } = string.Empty;
 
         [DisplayName("Факультет")]
-        public string FacultyId { get; set; } = string.Empty;
+        public Guid FacultyId { get; set; }
 
-        [DisplayName("Форма обучения")]
-        public EducationForm EducationForm { get; set; } = EducationForm.full_time;
+        [DisplayName("Срок обучения (лет)")]
+        public int StudyDurationYears { get; set; } = 4;
     }
 
     /// <summary>
@@ -103,23 +93,19 @@ namespace UniversityContingent.Controller.ViewModels
             Name = group.Name ?? "Не указано";
             DirectionId = group.DirectionId;
             Course = group.Course;
-            Year = group.Year;
         }
 
         [Browsable(false)]
-        public string Id { get; set; } = string.Empty;
+        public Guid Id { get; set; }
 
         [DisplayName("Название группы")]
         public string? Name { get; set; } = string.Empty;
 
         [Browsable(false)]
-        public string DirectionId { get; set; } = string.Empty;
+        public Guid DirectionId { get; set; }
 
         [DisplayName("Курс")]
         public int Course { get; set; }
-
-        [DisplayName("Год набора")]
-        public int Year { get; set; }
     }
 
     /// <summary>
@@ -128,19 +114,16 @@ namespace UniversityContingent.Controller.ViewModels
     public class GroupEditViewModel
     {
         [Browsable(false)]
-        public string Id { get; set; } = string.Empty;
+        public Guid Id { get; set; }
 
         [DisplayName("Название группы")]
         public string Name { get; set; } = string.Empty;
 
         [DisplayName("Направление")]
-        public string DirectionId { get; set; } = string.Empty;
+        public Guid DirectionId { get; set; }
 
         [DisplayName("Курс")]
         public int Course { get; set; } = 1;
-
-        [DisplayName("Год набора")]
-        public int Year { get; set; } = DateTime.Now.Year;
     }
 
     /// <summary>
@@ -153,28 +136,35 @@ namespace UniversityContingent.Controller.ViewModels
         public StudentViewModel(Student student)
         {
             Id = student.Id;
-            FullName = student.FullName ?? "Не указано";
-            BirthDate = student.BirthDate;
-            GroupId = student.GroupId;
-            EnrollmentDate = student.EnrollmentDate;
+            LastName = student.LastName ?? string.Empty;
+            Name = student.Name ?? string.Empty;
+            Patronymic = student.Patronymic ?? string.Empty;
+            StudyBookNumber = student.StudyBookNumber;
+            EnrollmentDate = student.EnrollmentDate ?? DateTime.Now;
             Status = student.Status;
-            EnrollmentOrderId = student.EnrollmentOrderId;
+            GroupId = student.GroupId;
         }
 
         [Browsable(false)]
-        public string Id { get; set; } = string.Empty;
+        public Guid Id { get; set; }
 
-        [DisplayName("ФИО")]
-        public string? FullName { get; set; } = string.Empty;
+        [DisplayName("Фамилия")]
+        public string LastName { get; set; } = string.Empty;
 
-        [DisplayName("Дата рождения")]
-        public DateTime BirthDate { get; set; }
+        [DisplayName("Имя")]
+        public string Name { get; set; } = string.Empty;
 
-        [Browsable(false)]
-        public string GroupId { get; set; } = string.Empty;
+        [DisplayName("Отчество")]
+        public string Patronymic { get; set; } = string.Empty;
+
+        [DisplayName("Номер зачетки")]
+        public int StudyBookNumber { get; set; }
 
         [DisplayName("Дата зачисления")]
         public DateTime EnrollmentDate { get; set; }
+
+        [Browsable(false)]
+        public Guid GroupId { get; set; }
 
         [DisplayName("Статус")]
         public string StatusName => Status switch
@@ -189,7 +179,7 @@ namespace UniversityContingent.Controller.ViewModels
         public StudentStatus Status { get; set; }
 
         [Browsable(false)]
-        public string? EnrollmentOrderId { get; set; }
+        public string FullName => $"{LastName} {Name} {Patronymic}".Trim();
     }
 
     /// <summary>
@@ -198,16 +188,19 @@ namespace UniversityContingent.Controller.ViewModels
     public class StudentEditViewModel
     {
         [Browsable(false)]
-        public string Id { get; set; } = string.Empty;
+        public Guid Id { get; set; }
 
-        [DisplayName("ФИО")]
-        public string FullName { get; set; } = string.Empty;
+        [DisplayName("Фамилия")]
+        public string LastName { get; set; } = string.Empty;
 
-        [DisplayName("Дата рождения")]
-        public DateTime BirthDate { get; set; } = DateTime.Now.AddYears(-18);
+        [DisplayName("Имя")]
+        public string Name { get; set; } = string.Empty;
+
+        [DisplayName("Отчество")]
+        public string Patronymic { get; set; } = string.Empty;
 
         [DisplayName("Группа")]
-        public string GroupId { get; set; } = string.Empty;
+        public Guid GroupId { get; set; }
 
         [DisplayName("Дата зачисления")]
         public DateTime EnrollmentDate { get; set; } = DateTime.Now;
@@ -231,7 +224,7 @@ namespace UniversityContingent.Controller.ViewModels
         }
 
         [Browsable(false)]
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
         [DisplayName("Тип")]
         public string TypeName => Type switch
@@ -258,5 +251,56 @@ namespace UniversityContingent.Controller.ViewModels
 
         [DisplayName("Дата создания")]
         public DateTime CreatedAt { get; set; }
+    }
+
+    /// <summary>
+    /// ViewModel для создания приказа о зачислении
+    /// </summary>
+    public class EnrollmentOrderCreateViewModel
+    {
+        public EnrollmentOrderCreateViewModel()
+        {
+            Order = new Order();
+            Students = new List<EnrollmentStudentViewModel>();
+        }
+
+        [Browsable(false)]
+        public Order Order { get; set; }
+
+        [Browsable(false)]
+        public List<EnrollmentStudentViewModel> Students { get; set; }
+
+        [DisplayName("Номер приказа")]
+        public string Number => Order.Number ?? string.Empty;
+
+        [DisplayName("Дата приказа")]
+        public DateTime Date => Order.Date;
+
+        [DisplayName("Количество студентов")]
+        public int StudentCount => Students.Count;
+    }
+
+    /// <summary>
+    /// ViewModel для студента в приказе о зачислении
+    /// </summary>
+    public class EnrollmentStudentViewModel
+    {
+        [DisplayName("Фамилия")]
+        public string LastName { get; set; } = string.Empty;
+
+        [DisplayName("Имя")]
+        public string Name { get; set; } = string.Empty;
+
+        [DisplayName("Отчество")]
+        public string Patronymic { get; set; } = string.Empty;
+
+        [DisplayName("Номер зачетки")]
+        public int StudyBookNumber { get; set; }
+
+        [DisplayName("Группа")]
+        public Guid GroupId { get; set; }
+
+        [Browsable(false)]
+        public string FullName => $"{LastName} {Name} {Patronymic}".Trim();
     }
 }

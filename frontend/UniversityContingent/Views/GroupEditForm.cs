@@ -24,8 +24,7 @@ namespace UniversityContingent.Views
                     Id = group.Id,
                     Name = group.Name ?? string.Empty,
                     DirectionId = group.DirectionId,
-                    Course = group.Course,
-                    Year = group.Year
+                    Course = group.Course
                 };
 
             Text = _isEdit ? "Редактирование группы" : "Добавление группы";
@@ -50,21 +49,24 @@ namespace UniversityContingent.Views
         private void BindData()
         {
             txtName.Text = _viewModel.Name;
-            numCourse.Value = _viewModel.Course;
-            numYear.Value = _viewModel.Year;
+            numCourse.Value = _viewModel.Course > 0 ? _viewModel.Course : 1;
             
-            if (!string.IsNullOrEmpty(_viewModel.DirectionId) && _directions.Any())
+            if (_viewModel.DirectionId != Guid.Empty && _directions.Any())
             {
                 cmbDirection.SelectedValue = _viewModel.DirectionId;
+            }
+            else if (_directions.Any())
+            {
+                // Выбираем первое направление по умолчанию
+                cmbDirection.SelectedIndex = 0;
             }
         }
 
         private void SaveViewModel()
         {
             _viewModel.Name = txtName.Text.Trim();
-            _viewModel.DirectionId = cmbDirection.SelectedValue?.ToString() ?? string.Empty;
+            _viewModel.DirectionId = cmbDirection.SelectedValue is Guid directionId ? directionId : Guid.Empty;
             _viewModel.Course = (int)numCourse.Value;
-            _viewModel.Year = (int)numYear.Value;
         }
 
         private async void btnSave_Click(object sender, EventArgs e)
@@ -79,7 +81,7 @@ namespace UniversityContingent.Views
                 return;
             }
 
-            if (string.IsNullOrEmpty(_viewModel.DirectionId))
+            if (_viewModel.DirectionId == Guid.Empty)
             {
                 MessageBox.Show("Выберите направление", "Ошибка", 
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -96,9 +98,11 @@ namespace UniversityContingent.Views
                 {
                     Name = _viewModel.Name,
                     DirectionId = _viewModel.DirectionId,
-                    Course = _viewModel.Course,
-                    Year = _viewModel.Year
+                    Course = _viewModel.Course
                 };
+
+                var json = System.Text.Json.JsonSerializer.Serialize(group);
+                Console.WriteLine($"Creating group: {json}");
 
                 Group? result;
                 if (_isEdit)
@@ -110,6 +114,8 @@ namespace UniversityContingent.Views
                     result = await _apiService.CreateGroupAsync(group);
                 }
 
+                Console.WriteLine($"Result: {result?.Id}");
+
                 if (result != null)
                 {
                     ResultViewModel = new GroupEditViewModel
@@ -117,8 +123,7 @@ namespace UniversityContingent.Views
                         Id = result.Id,
                         Name = result.Name ?? string.Empty,
                         DirectionId = result.DirectionId,
-                        Course = result.Course,
-                        Year = result.Year
+                        Course = result.Course
                     };
                     DialogResult = DialogResult.OK;
                     Close();
@@ -131,7 +136,7 @@ namespace UniversityContingent.Views
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка: {ex.Message}", "Ошибка",
+                MessageBox.Show($"Ошибка: {ex.Message}\n\nStack: {ex.StackTrace}", "Ошибка",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             finally

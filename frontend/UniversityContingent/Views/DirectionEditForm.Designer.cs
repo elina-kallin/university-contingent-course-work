@@ -18,14 +18,15 @@ namespace UniversityContingent.Views
             lblName = new Label();
             lblCode = new Label();
             lblFaculty = new Label();
-            lblEducationForm = new Label();
+            lblStudyDuration = new Label();
             txtName = new TextBox();
             txtCode = new TextBox();
             cmbFaculty = new ComboBox();
-            cmbEducationForm = new ComboBox();
+            numStudyDuration = new NumericUpDown();
             btnSave = new Button();
             btnCancel = new Button();
             panelButtons = new FlowLayoutPanel();
+            ((System.ComponentModel.ISupportInitialize)numStudyDuration).BeginInit();
             panelButtons.SuspendLayout();
             SuspendLayout();
             // 
@@ -56,14 +57,14 @@ namespace UniversityContingent.Views
             lblFaculty.TabIndex = 2;
             lblFaculty.Text = "Факультет";
             // 
-            // lblEducationForm
+            // lblStudyDuration
             // 
-            lblEducationForm.AutoSize = true;
-            lblEducationForm.Location = new Point(20, 170);
-            lblEducationForm.Name = "lblEducationForm";
-            lblEducationForm.Size = new Size(97, 15);
-            lblEducationForm.TabIndex = 3;
-            lblEducationForm.Text = "Форма обучения";
+            lblStudyDuration.AutoSize = true;
+            lblStudyDuration.Location = new Point(20, 170);
+            lblStudyDuration.Name = "lblStudyDuration";
+            lblStudyDuration.Size = new Size(135, 15);
+            lblStudyDuration.TabIndex = 3;
+            lblStudyDuration.Text = "Срок обучения (лет)";
             // 
             // txtName
             // 
@@ -87,13 +88,15 @@ namespace UniversityContingent.Views
             cmbFaculty.Size = new Size(400, 23);
             cmbFaculty.TabIndex = 6;
             // 
-            // cmbEducationForm
+            // numStudyDuration
             // 
-            cmbEducationForm.DropDownStyle = ComboBoxStyle.DropDownList;
-            cmbEducationForm.Location = new Point(20, 188);
-            cmbEducationForm.Name = "cmbEducationForm";
-            cmbEducationForm.Size = new Size(200, 23);
-            cmbEducationForm.TabIndex = 7;
+            numStudyDuration.Location = new Point(20, 188);
+            numStudyDuration.Maximum = new decimal(new int[] { 10, 0, 0, 0 });
+            numStudyDuration.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
+            numStudyDuration.Name = "numStudyDuration";
+            numStudyDuration.Size = new Size(100, 23);
+            numStudyDuration.TabIndex = 7;
+            numStudyDuration.Value = new decimal(new int[] { 4, 0, 0, 0 });
             // 
             // btnSave
             // 
@@ -145,11 +148,11 @@ namespace UniversityContingent.Views
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(464, 310);
             Controls.Add(panelButtons);
-            Controls.Add(cmbEducationForm);
+            Controls.Add(numStudyDuration);
             Controls.Add(cmbFaculty);
             Controls.Add(txtCode);
             Controls.Add(txtName);
-            Controls.Add(lblEducationForm);
+            Controls.Add(lblStudyDuration);
             Controls.Add(lblFaculty);
             Controls.Add(lblCode);
             Controls.Add(lblName);
@@ -161,6 +164,7 @@ namespace UniversityContingent.Views
             StartPosition = FormStartPosition.CenterParent;
             Text = "DirectionEditForm";
             Load += DirectionEditForm_Load;
+            ((System.ComponentModel.ISupportInitialize)numStudyDuration).EndInit();
             panelButtons.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
@@ -169,11 +173,11 @@ namespace UniversityContingent.Views
         private Label lblName;
         private Label lblCode;
         private Label lblFaculty;
-        private Label lblEducationForm;
+        private Label lblStudyDuration;
         private TextBox txtName;
         private TextBox txtCode;
         private ComboBox cmbFaculty;
-        private ComboBox cmbEducationForm;
+        private NumericUpDown numStudyDuration;
         private Button btnSave;
         private Button btnCancel;
         private FlowLayoutPanel panelButtons;

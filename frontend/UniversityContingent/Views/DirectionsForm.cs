@@ -37,13 +37,7 @@ namespace UniversityContingent.Views
                     d.Name,
                     d.Code,
                     Факультет = _faculties.FirstOrDefault(f => f.Id == d.FacultyId)?.Name ?? "Не указан",
-                    ФормаОбучения = d.EducationForm switch
-                    {
-                        EducationForm.full_time => "Очная",
-                        EducationForm.part_time => "Заочная",
-                        EducationForm.extramural => "Очно-заочная",
-                        _ => "Не указано"
-                    }
+                    СрокОбучения = $"{d.StudyDurationYears} лет"
                 }).ToList();
 
                 lblStatus.Text = $"Загружено направлений: {_directions.Count}";
@@ -78,7 +72,14 @@ namespace UniversityContingent.Views
                 return;
             }
 
-            var id = dgvDirections.SelectedRows[0].Cells["Id"].Value?.ToString();
+            var idStr = dgvDirections.SelectedRows[0].Cells["Id"].Value?.ToString();
+            if (!Guid.TryParse(idStr, out var id))
+            {
+                MessageBox.Show("Неверный ID направления", "Ошибка",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            
             var direction = _directions.FirstOrDefault(d => d.Id == id);
 
             if (direction != null)
@@ -105,8 +106,8 @@ namespace UniversityContingent.Views
 
             if (result == DialogResult.Yes)
             {
-                var id = dgvDirections.SelectedRows[0].Cells["Id"].Value?.ToString();
-                if (!string.IsNullOrEmpty(id))
+                var idStr = dgvDirections.SelectedRows[0].Cells["Id"].Value?.ToString();
+                if (Guid.TryParse(idStr, out var id))
                 {
                     var success = await _apiService.DeleteDirectionAsync(id);
                     if (success)

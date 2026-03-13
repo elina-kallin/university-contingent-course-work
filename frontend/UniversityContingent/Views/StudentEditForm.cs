@@ -22,15 +22,14 @@ namespace UniversityContingent.Views
                 : new StudentEditViewModel
                 {
                     Id = student.Id,
-                    FullName = student.FullName ?? string.Empty,
-                    BirthDate = student.BirthDate,
+                    LastName = student.LastName ?? string.Empty,
+                    Name = student.Name ?? string.Empty,
+                    Patronymic = student.Patronymic ?? string.Empty,
                     GroupId = student.GroupId,
-                    EnrollmentDate = student.EnrollmentDate
+                    EnrollmentDate = student.EnrollmentDate ?? DateTime.Now
                 };
 
             Text = _isEdit ? "Редактирование студента" : "Просмотр студента";
-            
-            // Если не режим редактирования, отключаем кнопку сохранения
             btnSave.Visible = _isEdit;
         }
 
@@ -52,11 +51,12 @@ namespace UniversityContingent.Views
 
         private void BindData()
         {
-            txtFullName.Text = _viewModel.FullName;
-            dtpBirthDate.Value = _viewModel.BirthDate;
+            txtLastName.Text = _viewModel.LastName;
+            txtName.Text = _viewModel.Name;
+            txtPatronymic.Text = _viewModel.Patronymic;
             dtpEnrollmentDate.Value = _viewModel.EnrollmentDate;
             
-            if (!string.IsNullOrEmpty(_viewModel.GroupId) && _groups.Any())
+            if (_viewModel.GroupId != Guid.Empty && _groups.Any())
             {
                 cmbGroup.SelectedValue = _viewModel.GroupId;
             }
@@ -64,9 +64,10 @@ namespace UniversityContingent.Views
 
         private void SaveViewModel()
         {
-            _viewModel.FullName = txtFullName.Text.Trim();
-            _viewModel.BirthDate = dtpBirthDate.Value;
-            _viewModel.GroupId = cmbGroup.SelectedValue?.ToString() ?? string.Empty;
+            _viewModel.LastName = txtLastName.Text.Trim();
+            _viewModel.Name = txtName.Text.Trim();
+            _viewModel.Patronymic = txtPatronymic.Text.Trim();
+            _viewModel.GroupId = cmbGroup.SelectedValue is Guid groupId ? groupId : Guid.Empty;
             _viewModel.EnrollmentDate = dtpEnrollmentDate.Value;
         }
 
@@ -74,15 +75,23 @@ namespace UniversityContingent.Views
         {
             SaveViewModel();
 
-            if (string.IsNullOrEmpty(_viewModel.FullName))
+            if (string.IsNullOrEmpty(_viewModel.LastName))
             {
-                MessageBox.Show("Введите ФИО студента", "Ошибка", 
+                MessageBox.Show("Введите фамилию студента", "Ошибка", 
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                txtFullName.Focus();
+                txtLastName.Focus();
                 return;
             }
 
-            if (string.IsNullOrEmpty(_viewModel.GroupId))
+            if (string.IsNullOrEmpty(_viewModel.Name))
+            {
+                MessageBox.Show("Введите имя студента", "Ошибка", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txtName.Focus();
+                return;
+            }
+
+            if (_viewModel.GroupId == Guid.Empty)
             {
                 MessageBox.Show("Выберите группу", "Ошибка", 
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -95,8 +104,6 @@ namespace UniversityContingent.Views
 
             try
             {
-                // Примечание: API бекенда не поддерживает прямое редактирование студентов
-                // Студенты создаются/изменяются только через приказы
                 MessageBox.Show("Редактирование студентов доступно только через приказы", 
                     "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 

@@ -8,7 +8,7 @@ namespace UniversityContingent.Models
     public class Faculty
     {
         [JsonPropertyName("id")]
-        public string Id { get; set; } = string.Empty;
+        public Guid Id { get; set; }
 
         [JsonPropertyName("name")]
         public string Name { get; set; } = string.Empty;
@@ -23,7 +23,7 @@ namespace UniversityContingent.Models
     public class Direction
     {
         [JsonPropertyName("id")]
-        public string Id { get; set; } = string.Empty;
+        public Guid Id { get; set; }
 
         [JsonPropertyName("name")]
         public string Name { get; set; } = string.Empty;
@@ -31,23 +31,11 @@ namespace UniversityContingent.Models
         [JsonPropertyName("code")]
         public string? Code { get; set; }
 
-        [JsonPropertyName("faculty_id")]
-        public string FacultyId { get; set; } = string.Empty;
-        
         [JsonPropertyName("study_duration_years")]
         public int StudyDurationYears { get; set; }
 
-        [JsonPropertyName("education_form")]
-        public string EducationFormRaw { get; set; } = string.Empty;
-        
-        [JsonIgnore]
-        public EducationForm EducationForm => EducationFormRaw switch
-        {
-            "full_time" => EducationForm.full_time,
-            "part_time" => EducationForm.part_time,
-            "extramural" => EducationForm.extramural,
-            _ => EducationForm.full_time
-        };
+        [JsonPropertyName("faculty_id")]
+        public Guid FacultyId { get; set; }
     }
 
     /// <summary>
@@ -56,19 +44,16 @@ namespace UniversityContingent.Models
     public class Group
     {
         [JsonPropertyName("id")]
-        public string Id { get; set; } = string.Empty;
+        public Guid Id { get; set; }
 
         [JsonPropertyName("name")]
         public string Name { get; set; } = string.Empty;
 
-        [JsonPropertyName("direction_id")]
-        public string DirectionId { get; set; } = string.Empty;
-
         [JsonPropertyName("course")]
         public int Course { get; set; }
 
-        [JsonPropertyName("year")]
-        public int Year { get; set; }
+        [JsonPropertyName("direction_id")]
+        public Guid DirectionId { get; set; }
     }
 
     /// <summary>
@@ -77,25 +62,35 @@ namespace UniversityContingent.Models
     public class Student
     {
         [JsonPropertyName("id")]
-        public string Id { get; set; } = string.Empty;
+        public Guid Id { get; set; }
 
-        [JsonPropertyName("full_name")]
-        public string FullName { get; set; } = string.Empty;
+        [JsonPropertyName("last_name")]
+        public string LastName { get; set; } = string.Empty;
 
-        [JsonPropertyName("birth_date")]
-        public DateTime BirthDate { get; set; }
+        [JsonPropertyName("name")]
+        public string Name { get; set; } = string.Empty;
 
-        [JsonPropertyName("group_id")]
-        public string GroupId { get; set; } = string.Empty;
+        [JsonPropertyName("patronymic")]
+        public string? Patronymic { get; set; }
+
+        [JsonPropertyName("study_book_number")]
+        public int StudyBookNumber { get; set; }
 
         [JsonPropertyName("enrollment_date")]
-        public DateTime EnrollmentDate { get; set; }
+        public DateTime? EnrollmentDate { get; set; }
+
+        [JsonPropertyName("expulsion_date")]
+        public DateTime? ExpulsionDate { get; set; }
 
         [JsonPropertyName("status")]
         public StudentStatus Status { get; set; }
 
-        [JsonPropertyName("enrollment_order_id")]
-        public string? EnrollmentOrderId { get; set; }
+        [JsonPropertyName("group_id")]
+        public Guid GroupId { get; set; }
+
+        // Вспомогательное свойство для отображения
+        [JsonIgnore]
+        public string FullName => $"{LastName} {Name} {Patronymic}".Trim();
     }
 
     /// <summary>
@@ -104,10 +99,7 @@ namespace UniversityContingent.Models
     public class Order
     {
         [JsonPropertyName("id")]
-        public int Id { get; set; }
-
-        [JsonPropertyName("type")]
-        public OrderType Type { get; set; }
+        public Guid Id { get; set; }
 
         [JsonPropertyName("number")]
         public string? Number { get; set; }
@@ -115,26 +107,17 @@ namespace UniversityContingent.Models
         [JsonPropertyName("date")]
         public DateTime Date { get; set; }
 
+        [JsonPropertyName("type")]
+        public OrderType Type { get; set; }
+
         [JsonPropertyName("reason")]
         public string? Reason { get; set; }
 
         [JsonPropertyName("student_ids")]
-        public List<int> StudentIds { get; set; } = new();
+        public List<Guid> StudentIds { get; set; } = new();
 
         [JsonPropertyName("created_at")]
         public DateTime CreatedAt { get; set; }
-    }
-
-    /// <summary>
-    /// Специальный приказ с данными студентов
-    /// </summary>
-    public class SpecialOrder
-    {
-        [JsonPropertyName("order")]
-        public Order Order { get; set; } = new();
-
-        [JsonPropertyName("students")]
-        public List<Student> Students { get; set; } = new();
     }
 
     /// <summary>
@@ -142,25 +125,100 @@ namespace UniversityContingent.Models
     /// </summary>
     public class EnrollmentStudent
     {
-        [JsonPropertyName("full_name")]
-        public string FullName { get; set; } = string.Empty;
+        [JsonPropertyName("last_name")]
+        public string LastName { get; set; } = string.Empty;
 
-        [JsonPropertyName("birth_date")]
-        public DateTime BirthDate { get; set; }
+        [JsonPropertyName("name")]
+        public string Name { get; set; } = string.Empty;
+
+        [JsonPropertyName("patronymic")]
+        public string? Patronymic { get; set; }
+
+        [JsonPropertyName("study_book_number")]
+        public int StudyBookNumber { get; set; }
 
         [JsonPropertyName("group_id")]
-        public int GroupId { get; set; }
+        public Guid GroupId { get; set; }
     }
 
     /// <summary>
-    /// Данные для приказа о зачислении
+    /// Студент для зачисления (соответствует StudentForEnrollment на бэкенде)
     /// </summary>
-    public class EnrollmentOrderData
+    public class StudentForEnrollment
     {
+        [JsonPropertyName("last_name")]
+        public string LastName { get; set; } = string.Empty;
+
+        [JsonPropertyName("name")]
+        public string Name { get; set; } = string.Empty;
+
+        [JsonPropertyName("patronymic")]
+        public string? Patronymic { get; set; }
+
+        [JsonPropertyName("study_book_number")]
+        public int StudyBookNumber { get; set; }
+
+        [JsonPropertyName("group_id")]
+        public Guid GroupId { get; set; }
+    }
+
+    /// <summary>
+    /// Данные для приказа о зачислении (enrollment_order)
+    /// </summary>
+    public class EnrollmentOrderCreateData
+    {
+        [JsonPropertyName("order_id")]
+        public Guid OrderId { get; set; }
+
+        [JsonPropertyName("education_form")]
+        public string EducationForm { get; set; } = "full-time";
+
+        [JsonPropertyName("price")]
+        public string? Price { get; set; }
+    }
+
+    /// <summary>
+    /// Данные для приказа о зачислении со студентами
+    /// </summary>
+    public class EnrollmentOrderWithStudentsCreate
+    {
+        [JsonPropertyName("order")]
+        public OrderCreateData Order { get; set; } = new();
+
+        [JsonPropertyName("enrollment_order")]
+        public EnrollmentOrderCreateData EnrollmentOrder { get; set; } = new();
+
         [JsonPropertyName("students")]
-        public List<EnrollmentStudent> Students { get; set; } = new();
+        public List<StudentForEnrollment> Students { get; set; } = new();
+    }
+
+    /// <summary>
+    /// Данные для создания приказа (order)
+    /// </summary>
+    public class OrderCreateData
+    {
+        [JsonPropertyName("number")]
+        public string Number { get; set; } = string.Empty;
 
         [JsonPropertyName("date")]
         public DateTime Date { get; set; } = DateTime.Now;
+
+        [JsonPropertyName("type")]
+        public OrderType Type { get; set; } = OrderType.enrollment;
+
+        [JsonPropertyName("reason")]
+        public string Reason { get; set; } = string.Empty;
+    }
+
+    /// <summary>
+    /// Приказ с данными студентов (для создания)
+    /// </summary>
+    public class OrderWithStudents
+    {
+        [JsonPropertyName("order")]
+        public Order Order { get; set; } = new();
+
+        [JsonPropertyName("students")]
+        public List<Student> Students { get; set; } = new();
     }
 }

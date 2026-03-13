@@ -1,0 +1,121 @@
+================================================================================  
+PRIKAZY I PECHAT - POLNAYA INFORMATSIYA  
+================================================================================  
+  
+1. MODELI DANNYKH (backend/app/models/)  
+--------------------------------------------  
+1.1 ORDER (order.py) - Bazovaya tablica prikazov  
+Polya:  
+- id: Guid (PK)  
+- number: string  
+- date: DateOnly  
+- type: OrderType (enrollment, expulsion, next_course, academic_leave, transfer_direction)  
+- reason: string  
+  
+1.2 ORDER_STUDENT - Svyaz studentov s prikazami  
+Polya:  
+- id: Guid  
+- order_id: Guid (FK)  
+- student_id: Guid (FK) 
+  
+1.3-1.7 SPETSIALNYE PRIKAZY:  
+- EnrollmentOrder (zachislenie)  
+- ExpulsionOrder (otchislenie)  
+- NextCourseOrder (perevod na sled. kurs)  
+- AcademicLeaveOrder (akadem)  
+- TransferDirectionOrder (perevod na dr. napravlenie)  
+  
+2. PYDANTIC SKHEMY (backend/app/schemas/)  
+------------------------------------------------  
+- OrderCreate, OrderUpdate, OrderRead  
+- EnrollmentOrderCreate, EnrollmentOrderRead  
+- ExpulsionOrderCreate, ExpulsionOrderRead  
+- NextCourseOrderCreate, NextCourseOrderRead  
+- AcademicLeaveOrderCreate, AcademicLeaveOrderRead  
+- TransferDirectionOrderCreate, TransferDirectionOrderRead  
+- StudentForEnrollment (dlya sozdaniya s studentami)  
+- EnrollmentOrderWithStudentsCreate  
+- ExpulsionOrderWithStudentsCreate 
+  
+3. CRUD OPERATSII (backend/app/cruds/)  
+---------------------------------------------  
+- order.py: get_orders, get_order, create_order, update_order, delete_order  
+- order_student.py: create_order_student, delete_order_student, get_order_students_by_order  
+- enrollment_order.py: get/create/update/delete  
+- expulsion_order.py: get/create/update/delete  
+- next_course_order.py: get/create/update/delete  
+- academic_leave_order.py: get/create/update/delete  
+- transfer_direction_order.py: get/create/update/delete  
+  
+4. ORDER SERVICE (backend/app/services/order_service.py)  
+--------------------------------------------------------  
+class OrderService:  
+- create_enrollment_order_with_students()  
+- create_expulsion_order_with_students()  
+- create_academic_leave_order_with_students()  
+- create_next_course_order_with_students()  
+- create_transfer_direction_order_with_students() 
+  
+5. ROUTERY (backend/app/routers/)  
+------------------------------------  
+5.1 orders.py:  
+GET/POST /orders  
+GET/PUT/DELETE /orders/{id}  
+GET /orders/type/{order_type}  
+GET /orders/{id}/students  
+POST /orders/students  
+DELETE /orders/students/{id}  
+GET /orders/{id}/print - PECHAT PRIKAZA (HTML)  
+  
+5.2 special_orders.py:  
+GET/POST /special-orders/enrollment  
+POST /special-orders/enrollment-with-students  
+POST /special-orders/expulsion-with-students  
+POST /special-orders/academic-leave-with-students  
+POST /special-orders/next-course-with-students  
+POST /special-orders/transfer-direction-with-students 
+  
+6. PECHAT PRIKAZOV (backend/app/services/print_service.py)  
+--------------------------------------------------------  
+- generate_enrollment_order_html(order, students, university_name)  
+- generate_expulsion_order_html(order, students, university_name)  
+- generate_generic_order_html(order, students, title, university_name)  
+  
+HTML Shablon:  
+- Times New Roman, 14pt  
+- Tablica s studentami  
+- Podpis vnizu  
+- @media print - marginesy 2cm  
+  
+7. PRIMERY ZAPROSOV (JSON)  
+----------------------------  
+POST /special-orders/enrollment-with-students  
+{  
+  \"order\": {\"number\": \"123-k\", \"date\": \"2024-09-01\", \"reason\": \"...\"},  
+  \"enrollment_order\": {\"education_form\": \"full-time\", \"price\": null},  
+  \"students\": [  
+    {\"name\": \"Ivan\", \"last_name\": \"Ivanov\", \"study_book_number\": 12345, \"group_id\": \"...\"}  
+  ]  
+} 
+  
+8. C# MODELI DLYA FRONTENDA  
+-------------------------------  
+public class Order  
+{  
+    public Guid id { get; set; }  
+    public string number { get; set; }  
+    public DateOnly date { get; set; }  
+    public string type { get; set; }  
+    public string reason { get; set; }  
+}  
+  
+public class StudentForEnrollment  
+{  
+    public string name { get; set; }  
+    public string last_name { get; set; }  
+    public int study_book_number { get; set; }  
+    public Guid group_id { get; set; }  
+}  
+  
+public class EnrollmentOrderWithStudentsCreate  
+{  

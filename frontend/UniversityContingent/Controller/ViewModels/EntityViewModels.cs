@@ -220,7 +220,7 @@ namespace UniversityContingent.Controller.ViewModels
             Number = order.Number ?? "Не указан";
             Date = order.Date;
             Reason = order.Reason ?? "Не указана";
-            CreatedAt = order.CreatedAt;
+            //CreatedAt = order.CreatedAt;
         }
 
         [Browsable(false)]

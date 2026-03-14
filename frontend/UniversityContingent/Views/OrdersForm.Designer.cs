@@ -110,9 +110,9 @@ namespace UniversityContingent.Views
             lblStatus.Size = new Size(133, 25);
             lblStatus.TabIndex = 2;
             lblStatus.Text = "Загружено приказов: 0";
-            // 
+            //
             // OrdersForm
-            // 
+            //
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(900, 515);
@@ -122,7 +122,7 @@ namespace UniversityContingent.Views
             Name = "OrdersForm";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Приказы";
-            Load += OrdersForm_Load;
+            Shown += OrdersForm_Shown;
             panelTop.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)dgvOrders).EndInit();
             ResumeLayout(false);

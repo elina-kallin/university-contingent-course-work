@@ -112,12 +112,6 @@ namespace UniversityContingent.Models
 
         [JsonPropertyName("reason")]
         public string? Reason { get; set; }
-
-        [JsonPropertyName("student_ids")]
-        public List<Guid> StudentIds { get; set; } = new();
-
-        [JsonPropertyName("created_at")]
-        public DateTime CreatedAt { get; set; }
     }
 
     /// <summary>

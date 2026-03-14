@@ -1,3 +1,6 @@
+using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using UniversityContingent.Models;
 
 namespace UniversityContingent.Controller.Api
@@ -31,6 +34,9 @@ namespace UniversityContingent.Controller.Api
 
         // Студенты
         Task<Student?> GetStudentAsync(Guid id);
+        Task<Student?> CreateStudentAsync(Student student);
+        Task<Student?> UpdateStudentAsync(Guid id, Student student);
+        Task<bool> DeleteStudentAsync(Guid id);
 
         // Приказы
         Task<Order?> CreateEnrollmentOrderAsync(EnrollmentOrderWithStudentsCreate data);
@@ -38,6 +44,8 @@ namespace UniversityContingent.Controller.Api
         Task<string?> GetOrderPrintHtmlAsync(Guid id);
         Task<List<Order>?> GetOrdersAsync();
         Task<Order?> CreateOrderAsync(Order order);
+        Task<Order?> UpdateOrderAsync(Guid id, Order order);
+        Task<bool> DeleteOrderAsync(Guid id);
     }
 
     /// <summary>
@@ -101,6 +109,12 @@ namespace UniversityContingent.Controller.Api
             return await _httpClient.PostAsync(endpoint, content);
         }
 
+        private static readonly JsonSerializerOptions JsonOptions = new()
+        {
+            PropertyNameCaseInsensitive = true,
+            Converters = { new JsonStringEnumConverter() }
+        };
+
         private async Task<T?> GetAsync<T>(string endpoint)
         {
             try
@@ -125,17 +139,21 @@ namespace UniversityContingent.Controller.Api
                     }
                 }
 
+                var content = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"[DEBUG] GET {endpoint} - Status: {response.StatusCode}");
+                
                 if (response.IsSuccessStatusCode)
                 {
-                    var content = await response.Content.ReadAsStringAsync();
-                    Console.WriteLine($"[DEBUG] GET {endpoint}: {content}");
                     try
                     {
-                        return System.Text.Json.JsonSerializer.Deserialize<T>(content);
+                        var result = System.Text.Json.JsonSerializer.Deserialize<T>(content, JsonOptions);
+                        Console.WriteLine($"[DEBUG] Deserialized successfully, type: {typeof(T).Name}, count: {(result is System.Collections.IEnumerable e ? e.Cast<object>().Count().ToString() : "N/A")}");
+                        return result;
                     }
-                    catch (Exception ex)
+                    catch (System.Text.Json.JsonException ex)
                     {
-                        Console.WriteLine($"[DEBUG] Deserialize error: {ex.Message}");
+                        Console.WriteLine($"[DEBUG] JSON Deserialize error: {ex.Message}");
+                        Console.WriteLine($"[DEBUG] JSON: {content}");
                         return default;
                     }
                 }
@@ -312,6 +330,21 @@ namespace UniversityContingent.Controller.Api
             return await GetAsync<Student>($"/students/{id}");
         }
 
+        public async Task<Student?> CreateStudentAsync(Student student)
+        {
+            return await PostAsync<Student>("/students", student);
+        }
+
+        public async Task<Student?> UpdateStudentAsync(Guid id, Student student)
+        {
+            return await PutAsync<Student>($"/students/{id}", student);
+        }
+
+        public async Task<bool> DeleteStudentAsync(Guid id)
+        {
+            return await DeleteAsync($"/students/{id}");
+        }
+
         public async Task<Direction?> CreateDirectionAsync(Direction direction)
         {
             return await PostAsync<Direction>("/directions", direction);
@@ -424,6 +457,16 @@ namespace UniversityContingent.Controller.Api
         public async Task<Order?> CreateOrderAsync(Order order)
         {
             return await PostAsync<Order>("/orders", order);
+        }
+
+        public async Task<Order?> UpdateOrderAsync(Guid id, Order order)
+        {
+            return await PutAsync<Order>($"/orders/{id}", order);
+        }
+
+        public async Task<bool> DeleteOrderAsync(Guid id)
+        {
+            return await DeleteAsync($"/orders/{id}");
         }
     }
 }

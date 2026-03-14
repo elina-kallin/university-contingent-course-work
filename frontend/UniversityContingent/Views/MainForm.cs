@@ -18,7 +18,7 @@ namespace UniversityContingent.Views
             lblRole.Text = userResponse.Role ?? "Пользователь";
         }
 
-        private async void MainForm_Load(object sender, EventArgs e)
+        private async void MainForm_Shown(object sender, EventArgs e)
         {
             await LoadDataAsync();
         }

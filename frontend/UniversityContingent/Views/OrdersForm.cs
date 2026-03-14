@@ -12,12 +12,9 @@ namespace UniversityContingent.Views
         {
             InitializeComponent();
             _apiService = apiService;
-            
-            // Подписываемся на событие Load
-            this.Load += OrdersForm_Load;
         }
 
-        private async void OrdersForm_Load(object sender, EventArgs e)
+        private async void OrdersForm_Shown(object sender, EventArgs e)
         {
             await LoadOrdersAsync();
         }

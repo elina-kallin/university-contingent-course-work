@@ -48,6 +48,8 @@ namespace UniversityContingent.Views
             tabStudents = new TabPage();
             dgvStudents = new DataGridView();
             panelFilters = new Panel();
+            btnEdit = new Button();
+            btnDelete = new Button();
             btnRefresh = new Button();
             cmbGroups = new ComboBox();
             cmbDirections = new ComboBox();
@@ -244,9 +246,11 @@ namespace UniversityContingent.Views
             dgvStudents.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dgvStudents.Size = new Size(1225, 546);
             dgvStudents.TabIndex = 2;
-            // 
+            //
             // panelFilters
-            // 
+            //
+            panelFilters.Controls.Add(btnDelete);
+            panelFilters.Controls.Add(btnEdit);
             panelFilters.Controls.Add(btnRefresh);
             panelFilters.Controls.Add(cmbGroups);
             panelFilters.Controls.Add(cmbDirections);
@@ -260,9 +264,43 @@ namespace UniversityContingent.Views
             panelFilters.Name = "panelFilters";
             panelFilters.Size = new Size(1225, 74);
             panelFilters.TabIndex = 1;
-            // 
+            //
+            // btnDelete
+            //
+            btnDelete.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnDelete.BackColor = Color.FromArgb(200, 50, 50);
+            btnDelete.FlatAppearance.BorderSize = 0;
+            btnDelete.FlatStyle = FlatStyle.Flat;
+            btnDelete.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            btnDelete.ForeColor = Color.White;
+            btnDelete.Location = new Point(973, 20);
+            btnDelete.Margin = new Padding(3, 4, 3, 4);
+            btnDelete.Name = "btnDelete";
+            btnDelete.Size = new Size(130, 40);
+            btnDelete.TabIndex = 8;
+            btnDelete.Text = "Удалить";
+            btnDelete.UseVisualStyleBackColor = false;
+            btnDelete.Click += btnDelete_Click;
+            //
+            // btnEdit
+            //
+            btnEdit.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btnEdit.BackColor = Color.FromArgb(0, 120, 215);
+            btnEdit.FlatAppearance.BorderSize = 0;
+            btnEdit.FlatStyle = FlatStyle.Flat;
+            btnEdit.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            btnEdit.ForeColor = Color.White;
+            btnEdit.Location = new Point(837, 20);
+            btnEdit.Margin = new Padding(3, 4, 3, 4);
+            btnEdit.Name = "btnEdit";
+            btnEdit.Size = new Size(130, 40);
+            btnEdit.TabIndex = 7;
+            btnEdit.Text = "Редактировать";
+            btnEdit.UseVisualStyleBackColor = false;
+            btnEdit.Click += btnEdit_Click;
+            //
             // btnRefresh
-            // 
+            //
             btnRefresh.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btnRefresh.BackColor = Color.FromArgb(0, 120, 215);
             btnRefresh.FlatAppearance.BorderSize = 0;
@@ -358,7 +396,7 @@ namespace UniversityContingent.Views
             StartPosition = FormStartPosition.CenterScreen;
             Text = "University Contingent - Учёт контингента";
             WindowState = FormWindowState.Maximized;
-            Load += MainForm_Load;
+            Shown += MainForm_Shown;
             menuStrip.ResumeLayout(false);
             menuStrip.PerformLayout();
             panelTop.ResumeLayout(false);

@@ -33,12 +33,22 @@ namespace UniversityContingent.Views
 
                 dgvDirections.DataSource = _directions.Select(d => new
                 {
-                    d.Id,
-                    d.Name,
-                    d.Code,
+                    Id = d.Id,
+                    Название = d.Name ?? "Не указано",
+                    Код = d.Code ?? "Не указан",
                     Факультет = _faculties.FirstOrDefault(f => f.Id == d.FacultyId)?.Name ?? "Не указан",
                     СрокОбучения = $"{d.StudyDurationYears} лет"
                 }).ToList();
+
+                // Русификация заголовков и скрытие ID
+                if (dgvDirections.Columns.Count > 0)
+                {
+                    dgvDirections.Columns["Id"].Visible = false;
+                    dgvDirections.Columns["Название"].HeaderText = "Наименование";
+                    dgvDirections.Columns["Код"].HeaderText = "Код";
+                    dgvDirections.Columns["Факультет"].HeaderText = "Факультет";
+                    dgvDirections.Columns["СрокОбучения"].HeaderText = "Срок обучения";
+                }
 
                 lblStatus.Text = $"Загружено направлений: {_directions.Count}";
             }

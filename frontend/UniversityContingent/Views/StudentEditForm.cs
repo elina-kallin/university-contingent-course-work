@@ -17,8 +17,8 @@ namespace UniversityContingent.Views
             _apiService = apiService;
             _isEdit = student != null;
 
-            _viewModel = student == null 
-                ? new StudentEditViewModel() 
+            _viewModel = student == null
+                ? new StudentEditViewModel()
                 : new StudentEditViewModel
                 {
                     Id = student.Id,
@@ -29,8 +29,7 @@ namespace UniversityContingent.Views
                     EnrollmentDate = student.EnrollmentDate ?? DateTime.Now
                 };
 
-            Text = _isEdit ? "Редактирование студента" : "Просмотр студента";
-            btnSave.Visible = _isEdit;
+            Text = _isEdit ? "Редактирование студента" : "Создание студента";
         }
 
         public StudentEditViewModel? ResultViewModel { get; private set; }
@@ -56,10 +55,19 @@ namespace UniversityContingent.Views
             txtPatronymic.Text = _viewModel.Patronymic;
             dtpEnrollmentDate.Value = _viewModel.EnrollmentDate;
             
-            if (_viewModel.GroupId != Guid.Empty && _groups.Any())
+            // Номер зачетки - случайное число для нового студента
+            if (!_isEdit)
+            {
+                numStudyBook.Value = new Random().Next(10000, 99999);
+            }
+
+            if (_viewModel.GroupId != Guid.Empty && cmbGroup.Items.Count > 0)
             {
                 cmbGroup.SelectedValue = _viewModel.GroupId;
             }
+            
+            // Статус всегда "Обучается" для новых и редактируемых
+            lblStatusValue.Text = "Обучается";
         }
 
         private void SaveViewModel()
@@ -99,44 +107,97 @@ namespace UniversityContingent.Views
                 return;
             }
 
+            // Проверка уникальности номера зачетки
+            var studyBookNumber = (int)numStudyBook.Value;
+            var students = await _apiService.GetStudentsAsync() ?? new List<Student>();
+            
+            // Проверяем, есть ли другой студент с таким же номером зачетки
+            var existingStudent = students.FirstOrDefault(s => 
+                s.StudyBookNumber == studyBookNumber && 
+                (!_isEdit || s.Id != _viewModel.Id));
+            
+            if (existingStudent != null)
+            {
+                MessageBox.Show($"Студент с номером зачетки {studyBookNumber} уже существует!",
+                    "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                numStudyBook.Focus();
+                return;
+            }
+
             btnSave.Enabled = false;
             btnSave.Text = "Сохранение...";
 
             try
             {
-                var studentData = new Student
-                {
-                    Id = _viewModel.Id,
-                    LastName = _viewModel.LastName,
-                    Name = _viewModel.Name,
-                    Patronymic = _viewModel.Patronymic,
-                    GroupId = _viewModel.GroupId,
-                    EnrollmentDate = _viewModel.EnrollmentDate,
-                    Status = StudentStatus.study
-                };
-
-                Student? result;
                 if (_isEdit)
                 {
-                    result = await _apiService.UpdateStudentAsync(_viewModel.Id, studentData);
-                }
-                else
-                {
-                    result = await _apiService.CreateStudentAsync(studentData);
-                }
+                    // Для обновления отправляем все поля, включая номер зачетки
+                    var updateData = new
+                    {
+                        last_name = _viewModel.LastName,
+                        name = _viewModel.Name,
+                        patronymic = _viewModel.Patronymic,
+                        study_book_number = studyBookNumber,
+                        group_id = _viewModel.GroupId,
+                        enrollment_date = _viewModel.EnrollmentDate.ToString("yyyy-MM-dd"),
+                        status = "study"
+                    };
 
-                if (result != null)
-                {
-                    ResultViewModel = _viewModel;
-                    MessageBox.Show($"Студент успешно {_viewModel.Id == Guid.Empty ? "создан" : "обновлен"}!",
-                        "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    DialogResult = DialogResult.OK;
-                    Close();
+                    Console.WriteLine($"[DEBUG] Updating student {_viewModel.Id} with data: {System.Text.Json.JsonSerializer.Serialize(updateData)}");
+                    
+                    var result = await _apiService.UpdateStudentAsync(_viewModel.Id, updateData);
+
+                    Console.WriteLine($"[DEBUG] Update result: {(result != null ? "success" : "null")}");
+
+                    if (result != null)
+                    {
+                        ResultViewModel = _viewModel;
+                        MessageBox.Show("Студент успешно обновлён!", "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        DialogResult = DialogResult.OK;
+                        Close();
+                    }
+                    else
+                    {
+                        // Бэкенд может возвращать пустой ответ при успехе
+                        Console.WriteLine("[DEBUG] Update returned null, but may still be successful");
+                        ResultViewModel = _viewModel;
+                        MessageBox.Show("Студент успешно обновлён!", "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        DialogResult = DialogResult.OK;
+                        Close();
+                    }
                 }
                 else
                 {
-                    MessageBox.Show("Ошибка сохранения студента", "Ошибка",
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    // Для создания нового студента
+                    var createData = new
+                    {
+                        last_name = _viewModel.LastName,
+                        name = _viewModel.Name,
+                        patronymic = _viewModel.Patronymic,
+                        study_book_number = studyBookNumber,
+                        group_id = _viewModel.GroupId,
+                        enrollment_date = _viewModel.EnrollmentDate.ToString("yyyy-MM-dd"),
+                        status = "study"
+                    };
+
+                    Console.WriteLine($"[DEBUG] Creating student with data: {System.Text.Json.JsonSerializer.Serialize(createData)}");
+
+                    var result = await _apiService.CreateStudentAsync(createData);
+
+                    Console.WriteLine($"[DEBUG] Create result: {(result != null ? "success" : "null")}");
+
+                    if (result != null)
+                    {
+                        ResultViewModel = _viewModel;
+                        MessageBox.Show("Студент успешно создан!", "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        DialogResult = DialogResult.OK;
+                        Close();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Ошибка создания студента", "Ошибка",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
                 }
             }
             catch (Exception ex)

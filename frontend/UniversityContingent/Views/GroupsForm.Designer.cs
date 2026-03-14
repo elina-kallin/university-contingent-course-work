@@ -115,6 +115,8 @@ namespace UniversityContingent.Views
             dgvGroups.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dgvGroups.Size = new Size(900, 450);
             dgvGroups.TabIndex = 1;
+            dgvGroups.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            dgvGroups.ColumnHeadersHeight = 30;
             dgvGroups.CellDoubleClick += dgvGroups_CellDoubleClick;
             // 
             // lblStatus

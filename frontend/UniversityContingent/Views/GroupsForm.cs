@@ -33,11 +33,20 @@ namespace UniversityContingent.Views
 
                 dgvGroups.DataSource = _groups.Select(g => new
                 {
-                    g.Id,
-                    g.Name,
+                    Id = g.Id,
+                    Название = g.Name ?? "Не указана",
                     Направление = _directions.FirstOrDefault(d => d.Id == g.DirectionId)?.Name ?? "Не указано",
-                    g.Course
+                    Курс = $"Курс {g.Course}"
                 }).ToList();
+
+                // Русификация заголовков и скрытие ID
+                if (dgvGroups.Columns.Count > 0)
+                {
+                    dgvGroups.Columns["Id"].Visible = false;
+                    dgvGroups.Columns["Название"].HeaderText = "Название группы";
+                    dgvGroups.Columns["Направление"].HeaderText = "Направление";
+                    dgvGroups.Columns["Курс"].HeaderText = "Курс";
+                }
 
                 lblStatus.Text = $"Загружено групп: {_groups.Count}";
             }

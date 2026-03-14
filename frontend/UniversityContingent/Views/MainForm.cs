@@ -7,6 +7,8 @@ namespace UniversityContingent.Views
     {
         private readonly ApiService _apiService;
         private readonly LoginResponse _userResponse;
+        private bool _isLoading = false; // Флаг для предотвращения рекурсивных вызовов
+        private Faculty? _deanFaculty; // Факультет декана
 
         public MainForm(ApiService apiService, LoginResponse userResponse)
         {
@@ -14,46 +16,126 @@ namespace UniversityContingent.Views
             _apiService = apiService;
             _userResponse = userResponse;
 
-            lblUserName.Text = $"{userResponse.FullName} ({userResponse.UserLogin})";
+            // Отображаем приветствие с ФИО декана
+            var displayName = !string.IsNullOrEmpty(userResponse.FullName) 
+                ? userResponse.FullName 
+                : userResponse.UserLogin;
+            lblUserName.Text = $"Здравствуйте, {displayName}";
             lblRole.Text = userResponse.Role ?? "Пользователь";
         }
 
         private async void MainForm_Shown(object sender, EventArgs e)
         {
-            await LoadDataAsync();
+            // Загружаем факультет декана и направления
+            await LoadDeanFacultyAsync();
+            await LoadDirectionsAsync();
+        }
+
+        private async Task LoadDeanFacultyAsync()
+        {
+            try
+            {
+                // Получаем все факультеты и находим факультет декана
+                // (в реальном проекте нужно получать через /auth/me или из токена)
+                var faculties = await _apiService.GetFacultiesAsync() ?? new List<Faculty>();
+                
+                // Для демонстрации берём первый факультет
+                // В реальности нужно знать faculty_id декана
+                _deanFaculty = faculties.FirstOrDefault();
+                
+                if (_deanFaculty != null)
+                {
+                    lblFaculty.Text = $"Факультет: {_deanFaculty.Name}";
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[DEBUG] Error loading faculty: {ex.Message}");
+            }
+        }
+
+        private async Task LoadDirectionsAsync()
+        {
+            var directions = await _apiService.GetDirectionsAsync() ?? new List<Direction>();
+            
+            // Добавляем пустой элемент "Выбрать направление"
+            var directionList = new List<dynamic> { new { Id = Guid.Empty, Name = "— Выберите направление —" } };
+            directionList.AddRange(directions.Select(d => new { d.Id, d.Name }));
+            
+            cmbDirections.DataSource = directionList;
+            cmbDirections.DisplayMember = "Name";
+            cmbDirections.ValueMember = "Id";
+            cmbDirections.Enabled = true;
+            
+            // Группы и студенты заблокированы до выбора направления
+            cmbGroups.Enabled = false;
         }
 
         private async Task LoadDataAsync()
         {
+            if (_isLoading) return; // Защита от рекурсивных вызовов
+            
             try
             {
-                // Загружаем данные для ComboBox
-                var faculties = await _apiService.GetFacultiesAsync();
-                var directions = await _apiService.GetDirectionsAsync();
-                var groups = await _apiService.GetGroupsAsync();
-                var students = await _apiService.GetStudentsAsync();
+                _isLoading = true;
+                
+                // Загружаем все данные
+                var groups = await _apiService.GetGroupsAsync() ?? new List<Group>();
+                var students = await _apiService.GetStudentsAsync() ?? new List<Student>();
 
-                // Заполняем ComboBox
-                cmbFaculties.DataSource = faculties?.Select(f => new { f.Id, f.Name }).ToList();
-                cmbFaculties.DisplayMember = "Name";
-                cmbFaculties.ValueMember = "Id";
-
-                cmbDirections.DataSource = directions?.Select(d => new { d.Id, d.Name }).ToList();
-                cmbDirections.DisplayMember = "Name";
-                cmbDirections.ValueMember = "Id";
-
-                cmbGroups.DataSource = groups?.Select(g => new { g.Id, g.Name }).ToList();
+                // Фильтруем группы по выбранному направлению
+                var selectedDirectionId = cmbDirections.SelectedValue is Guid dirId && dirId != Guid.Empty ? dirId : Guid.Empty;
+                var filteredGroups = selectedDirectionId != Guid.Empty 
+                    ? groups.Where(g => g.DirectionId == selectedDirectionId).ToList() 
+                    : groups;
+                
+                // Сохраняем текущий выбранный ID группы
+                var currentSelectedGroupId = cmbGroups.SelectedValue is Guid grpId ? grpId : Guid.Empty;
+                
+                // Отключаем событие чтобы не вызывать рекурсивную загрузку
+                cmbGroups.SelectedIndexChanged -= cmbGroups_SelectedIndexChanged;
+                
+                // Обновляем DataSource групп
+                cmbGroups.DataSource = filteredGroups.Select(g => new { g.Id, g.Name }).ToList();
                 cmbGroups.DisplayMember = "Name";
                 cmbGroups.ValueMember = "Id";
-
-                // Заполняем DataGridView студентами
-                dgvStudents.DataSource = students?.Select(s => new
+                
+                // Восстанавливаем выбор если группа есть в новом списке
+                if (currentSelectedGroupId != Guid.Empty && filteredGroups.Any(g => g.Id == currentSelectedGroupId))
                 {
-                    s.Id,
-                    ФИО = s.FullName,
-                    s.StudyBookNumber,
-                    Группа = groups?.FirstOrDefault(g => g.Id == s.GroupId)?.Name ?? "Не указана",
-                    s.EnrollmentDate,
+                    cmbGroups.SelectedValue = currentSelectedGroupId;
+                }
+                
+                cmbGroups.Enabled = selectedDirectionId != Guid.Empty && filteredGroups.Count > 0;
+                
+                // Включаем событие обратно
+                cmbGroups.SelectedIndexChanged += cmbGroups_SelectedIndexChanged;
+
+                // Фильтруем студентов по выбранной группе или направлению
+                var selectedGroupId = cmbGroups.SelectedValue is Guid selectedGrpId ? selectedGrpId : Guid.Empty;
+                List<Student> filteredStudents;
+                
+                if (selectedGroupId != Guid.Empty)
+                {
+                    filteredStudents = students.Where(s => s.GroupId == selectedGroupId).ToList();
+                }
+                else if (selectedDirectionId != Guid.Empty)
+                {
+                    var directionGroupIds = filteredGroups.Select(g => g.Id).ToHashSet();
+                    filteredStudents = students.Where(s => directionGroupIds.Contains(s.GroupId)).ToList();
+                }
+                else
+                {
+                    filteredStudents = students;
+                }
+
+                dgvStudents.DataSource = filteredStudents.Select(s => new
+                {
+                    Id = s.Id,
+                    ФИО = $"{s.LastName} {s.Name} {s.Patronymic}".Trim(),
+                    Зачетка = s.StudyBookNumber,
+                    Группа = groups.FirstOrDefault(g => g.Id == s.GroupId)?.Name ?? "Не указана",
+                    ДатаЗачисления = s.EnrollmentDate?.ToString("dd.MM.yyyy") ?? "Не указана",
                     Статус = s.Status switch
                     {
                         StudentStatus.study => "Обучается",
@@ -63,12 +145,27 @@ namespace UniversityContingent.Views
                     }
                 }).ToList();
 
-                lblStatus.Text = $"Загружено студентов: {students?.Count ?? 0}";
+                // Русификация заголовков колонок
+                if (dgvStudents.Columns.Count > 0)
+                {
+                    dgvStudents.Columns["Id"].Visible = false;
+                    dgvStudents.Columns["ФИО"].HeaderText = "ФИО";
+                    dgvStudents.Columns["Зачетка"].HeaderText = "№ зачетки";
+                    dgvStudents.Columns["Группа"].HeaderText = "Группа";
+                    dgvStudents.Columns["ДатаЗачисления"].HeaderText = "Дата зачисления";
+                    dgvStudents.Columns["Статус"].HeaderText = "Статус";
+                }
+
+                lblStatus.Text = $"Загружено студентов: {filteredStudents.Count}";
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка загрузки данных: {ex.Message}", "Ошибка", 
+                MessageBox.Show($"Ошибка загрузки данных: {ex.Message}", "Ошибка",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                _isLoading = false;
             }
         }
 
@@ -78,18 +175,103 @@ namespace UniversityContingent.Views
             Application.Restart();
         }
 
-        private void cmbFaculties_SelectedIndexChanged(object sender, EventArgs e)
+        private async void cmbDirections_SelectedIndexChanged(object sender, EventArgs e)
         {
-            // Фильтрация по факультету
-            if (cmbFaculties.SelectedValue != null)
+            // При выборе направления загружаем группы этого направления
+            // Игнорируем если выбрано "— Выберите направление —"
+            if (!_isLoading && cmbDirections.SelectedValue is Guid dirId && dirId != Guid.Empty)
             {
-                // TODO: Фильтрация направлений и групп
+                await LoadDataAsync();
+            }
+        }
+
+        private async void cmbGroups_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            // При выборе группы загружаем студентов этой группы
+            if (!_isLoading && cmbGroups.SelectedValue is Guid && cmbGroups.SelectedValue != null)
+            {
+                await LoadDataAsync();
             }
         }
 
         private void btnRefresh_Click(object sender, EventArgs e)
         {
             _ = LoadDataAsync();
+        }
+
+        private async void btnEdit_Click(object sender, EventArgs e)
+        {
+            if (dgvStudents.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("Выберите студента для редактирования", "Предупреждение",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            var idStr = dgvStudents.SelectedRows[0].Cells["Id"].Value?.ToString();
+            if (Guid.TryParse(idStr, out var id))
+            {
+                await EditStudentAsync(id);
+            }
+        }
+
+        private async void btnDelete_Click(object sender, EventArgs e)
+        {
+            if (dgvStudents.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("Выберите студента для удаления", "Предупреждение",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            var idStr = dgvStudents.SelectedRows[0].Cells["Id"].Value?.ToString();
+            if (Guid.TryParse(idStr, out var id))
+            {
+                var result = MessageBox.Show("Вы уверены, что хотите удалить этого студента?",
+                    "Подтверждение", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+                if (result == DialogResult.Yes)
+                {
+                    var success = await _apiService.DeleteStudentAsync(id);
+                    if (success)
+                    {
+                        MessageBox.Show("Студент успешно удалён", "Информация",
+                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        await LoadDataAsync();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Ошибка удаления студента", "Ошибка",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
+        }
+
+        private async Task EditStudentAsync(Guid id)
+        {
+            try
+            {
+                var student = await _apiService.GetStudentAsync(id);
+                if (student != null)
+                {
+                    using var form = new StudentEditForm(_apiService, student);
+                    if (form.ShowDialog() == DialogResult.OK)
+                    {
+                        await LoadDataAsync();
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Студент не найден", "Ошибка",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка: {ex.Message}", "Ошибка",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         // Меню - Справочники

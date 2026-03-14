@@ -35,7 +35,9 @@ namespace UniversityContingent.Controller.Api
         // Студенты
         Task<Student?> GetStudentAsync(Guid id);
         Task<Student?> CreateStudentAsync(Student student);
+        Task<Student?> CreateStudentAsync(object data);
         Task<Student?> UpdateStudentAsync(Guid id, Student student);
+        Task<Student?> UpdateStudentAsync(Guid id, object data);
         Task<bool> DeleteStudentAsync(Guid id);
 
         // Приказы
@@ -273,27 +275,41 @@ namespace UniversityContingent.Controller.Api
         {
             try
             {
+                Console.WriteLine($"[DEBUG] Login attempt to {_baseUrl}/auth/login with login: {login}");
+                
                 var requestData = new LoginRequest { Login = login, Password = password };
                 var json = System.Text.Json.JsonSerializer.Serialize(requestData);
                 var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
-                
+
+                Console.WriteLine($"[DEBUG] Request body: {json}");
+
                 var response = await _httpClient.PostAsync("/auth/login", content);
+                
+                Console.WriteLine($"[DEBUG] Response status: {response.StatusCode}");
+                var responseContent = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"[DEBUG] Response body: {responseContent}");
+                
                 if (response.IsSuccessStatusCode)
                 {
-                    var responseContent = await response.Content.ReadAsStringAsync();
                     var result = System.Text.Json.JsonSerializer.Deserialize<LoginResponse>(responseContent);
                     if (result != null)
                     {
                         AccessToken = result.AccessToken;
+                        Console.WriteLine($"[DEBUG] Token received: {AccessToken?.Substring(0, 20)}...");
                         SetAuthHeader();
                     }
                     return result;
+                }
+                else
+                {
+                    Console.WriteLine($"[DEBUG] Login failed: {response.StatusCode}");
                 }
                 return default;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Ошибка авторизации: {ex.Message}");
+                Console.WriteLine($"[DEBUG] Login exception: {ex.Message}");
+                Console.WriteLine($"[DEBUG] Stack trace: {ex.StackTrace}");
                 return default;
             }
         }
@@ -335,9 +351,19 @@ namespace UniversityContingent.Controller.Api
             return await PostAsync<Student>("/students", student);
         }
 
+        public async Task<Student?> CreateStudentAsync(object data)
+        {
+            return await PostAsync<Student>("/students", data);
+        }
+
         public async Task<Student?> UpdateStudentAsync(Guid id, Student student)
         {
             return await PutAsync<Student>($"/students/{id}", student);
+        }
+
+        public async Task<Student?> UpdateStudentAsync(Guid id, object data)
+        {
+            return await PutAsync<Student>($"/students/{id}", data);
         }
 
         public async Task<bool> DeleteStudentAsync(Guid id)

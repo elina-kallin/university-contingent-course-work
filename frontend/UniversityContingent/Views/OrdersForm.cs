@@ -30,10 +30,10 @@ namespace UniversityContingent.Views
 
                 dgvOrders.DataSource = _orders.Select(o => new
                 {
-                    o.Id,
-                    o.Number,
+                    Id = o.Id,
+                    НомерДела = o.Number ?? "б/н",
                     Дата = o.Date.ToString("dd.MM.yyyy"),
-                    Тип = o.Type switch
+                    ТипПриказа = o.Type switch
                     {
                         OrderType.enrollment => "О зачислении",
                         OrderType.expulsion => "Об отчислении",
@@ -42,8 +42,18 @@ namespace UniversityContingent.Views
                         OrderType.transfer_direction => "О переводе на другое направление",
                         _ => "Не указано"
                     },
-                    o.Reason
+                    Причина = o.Reason ?? "—"
                 }).ToList();
+
+                // Русификация заголовков колонок
+                if (dgvOrders.Columns.Count > 0)
+                {
+                    dgvOrders.Columns["Id"].Visible = false;
+                    dgvOrders.Columns["НомерДела"].HeaderText = "Номер дела";
+                    dgvOrders.Columns["Дата"].HeaderText = "Дата";
+                    dgvOrders.Columns["ТипПриказа"].HeaderText = "Тип приказа";
+                    dgvOrders.Columns["Причина"].HeaderText = "Причина";
+                }
 
                 lblStatus.Text = $"Загружено приказов: {_orders.Count}";
             }
@@ -105,6 +115,45 @@ namespace UniversityContingent.Views
             if (form.ShowDialog() == DialogResult.OK)
             {
                 _ = LoadOrdersAsync();
+            }
+        }
+
+        private void btnEdit_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("Редактирование приказов недоступно. Приказы можно только создавать новые.",
+                "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private async void btnDelete_Click(object sender, EventArgs e)
+        {
+            if (dgvOrders.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("Выберите приказ для удаления", "Предупреждение",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            var idStr = dgvOrders.SelectedRows[0].Cells["Id"].Value?.ToString();
+            if (Guid.TryParse(idStr, out var id))
+            {
+                var result = MessageBox.Show("Вы уверены, что хотите удалить этот приказ? Студенты не будут удалены.",
+                    "Подтверждение", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+                if (result == DialogResult.Yes)
+                {
+                    var success = await _apiService.DeleteOrderAsync(id);
+                    if (success)
+                    {
+                        MessageBox.Show("Приказ успешно удалён", "Информация",
+                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        await LoadOrdersAsync();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Ошибка удаления приказа", "Ошибка",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
             }
         }
 

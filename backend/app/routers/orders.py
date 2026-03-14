@@ -88,28 +88,36 @@ def print_order(order_id: UUID, db: Session = Depends(get_db), dean: Dean = Depe
     from app.models.student import Student
     from app.models.order_student import OrderStudent
     from app.models.group import Group
-    
+    from app.models.direction import Direction
+    from app.models.faculty import Faculty
+
     # Получаем приказ
     order = db.query(Order).filter(Order.id == order_id).first()
     if not order:
         raise HTTPException(status_code=404, detail="Order not found")
-    
+
     # Получаем студентов в приказе
     order_students = db.query(OrderStudent).filter(OrderStudent.order_id == order_id).all()
     student_ids = [os.student_id for os in order_students]
-    students = db.query(Student).join(Group).filter(Student.id.in_(student_ids)).all()
-    
+    students = db.query(Student).join(Group).join(Direction).join(Faculty).filter(
+        Student.id.in_(student_ids)
+    ).all()
+
     students_data = [
         {
             "last_name": s.last_name,
             "name": s.name,
             "patronymic": s.patronymic,
             "study_book_number": s.study_book_number,
-            "group_name": s.group.name
+            "group_name": s.group.name,
+            "faculty_name": s.group.direction.faculty.name,
+            "direction_name": s.group.direction.name,
+            "education_form": "full-time",  # Можно добавить поле в Student
+            "price": ""  # Можно получить из EnrollmentOrder
         }
         for s in students
     ]
-    
+
     order_data = {
         "number": order.number,
         "date": str(order.date),
@@ -117,11 +125,28 @@ def print_order(order_id: UUID, db: Session = Depends(get_db), dean: Dean = Depe
         "type": order.type.value if hasattr(order.type, 'value') else order.type
     }
     
+    # Получаем данные декана и факультета
+    dean_name = dean.full_name if dean else ""
+    faculty_name = dean.faculty.name if dean and dean.faculty else ""
+    faculty_short_name = dean.faculty.short_name if dean and dean.faculty else ""
+
     # Генерируем HTML в зависимости от типа приказа
     if order.type == OrderType.ENROLLMENT:
-        html = generate_enrollment_order_html(order_data, students_data)
+        html = generate_enrollment_order_html(
+            order_data, 
+            students_data,
+            university_name="Университет",
+            dean_full_name=dean_name,
+            faculty_name=faculty_name,
+            faculty_short_name=faculty_short_name
+        )
     elif order.type == OrderType.EXPULSION:
-        html = generate_expulsion_order_html(order_data, students_data)
+        html = generate_expulsion_order_html(
+            order_data, 
+            students_data,
+            university_name="Университет",
+            dean_full_name=dean_name
+        )
     else:
         title = f"ПРИКАЗ ({order.type})"
         html = generate_generic_order_html(order_data, students_data, title)

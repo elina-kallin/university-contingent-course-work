@@ -28,6 +28,7 @@ namespace UniversityContingent.Views
         /// </summary>
         private void InitializeComponent()
         {
+            DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
             menuStrip = new MenuStrip();
             fileToolStripMenuItem = new ToolStripMenuItem();
             exitToolStripMenuItem = new ToolStripMenuItem();
@@ -49,15 +50,13 @@ namespace UniversityContingent.Views
             dgvStudents = new DataGridView();
             panelFilters = new Panel();
             btnEdit = new Button();
-            btnDelete = new Button();
             btnRefresh = new Button();
             cmbGroups = new ComboBox();
             cmbDirections = new ComboBox();
-            cmbFaculties = new ComboBox();
             lblGroups = new Label();
             lblDirections = new Label();
-            lblFaculties = new Label();
             lblStatus = new Label();
+            lblFaculty = new Label();
             menuStrip.SuspendLayout();
             panelTop.SuspendLayout();
             panelContent.SuspendLayout();
@@ -72,6 +71,7 @@ namespace UniversityContingent.Views
             menuStrip.ImageScalingSize = new Size(20, 20);
             menuStrip.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem, справочникиToolStripMenuItem, студентыToolStripMenuItem, приказыToolStripMenuItem, отчетыToolStripMenuItem });
             menuStrip.Location = new Point(0, 0);
+            menuStrip.Name = "menuStrip";
             menuStrip.Padding = new Padding(7, 3, 0, 3);
             menuStrip.Size = new Size(1239, 30);
             menuStrip.TabIndex = 0;
@@ -236,6 +236,14 @@ namespace UniversityContingent.Views
             dgvStudents.AllowUserToAddRows = false;
             dgvStudents.AllowUserToDeleteRows = false;
             dgvStudents.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dataGridViewCellStyle1.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = SystemColors.Control;
+            dataGridViewCellStyle1.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            dataGridViewCellStyle1.ForeColor = SystemColors.WindowText;
+            dataGridViewCellStyle1.SelectionBackColor = SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = DataGridViewTriState.True;
+            dgvStudents.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             dgvStudents.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dgvStudents.Dock = DockStyle.Fill;
             dgvStudents.Location = new Point(3, 78);
@@ -243,64 +251,45 @@ namespace UniversityContingent.Views
             dgvStudents.MultiSelect = false;
             dgvStudents.Name = "dgvStudents";
             dgvStudents.ReadOnly = true;
+            dgvStudents.RowHeadersWidth = 51;
             dgvStudents.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvStudents.Size = new Size(1225, 546);
+            dgvStudents.Size = new Size(1225, 539);
             dgvStudents.TabIndex = 2;
-            //
+            // 
             // panelFilters
-            //
-            panelFilters.Controls.Add(btnDelete);
+            // 
             panelFilters.Controls.Add(btnEdit);
             panelFilters.Controls.Add(btnRefresh);
             panelFilters.Controls.Add(cmbGroups);
             panelFilters.Controls.Add(cmbDirections);
-            panelFilters.Controls.Add(cmbFaculties);
             panelFilters.Controls.Add(lblGroups);
             panelFilters.Controls.Add(lblDirections);
-            panelFilters.Controls.Add(lblFaculties);
             panelFilters.Dock = DockStyle.Top;
             panelFilters.Location = new Point(3, 4);
             panelFilters.Margin = new Padding(3, 4, 3, 4);
             panelFilters.Name = "panelFilters";
             panelFilters.Size = new Size(1225, 74);
             panelFilters.TabIndex = 1;
-            //
-            // btnDelete
-            //
-            btnDelete.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnDelete.BackColor = Color.FromArgb(200, 50, 50);
-            btnDelete.FlatAppearance.BorderSize = 0;
-            btnDelete.FlatStyle = FlatStyle.Flat;
-            btnDelete.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
-            btnDelete.ForeColor = Color.White;
-            btnDelete.Location = new Point(973, 20);
-            btnDelete.Margin = new Padding(3, 4, 3, 4);
-            btnDelete.Name = "btnDelete";
-            btnDelete.Size = new Size(130, 40);
-            btnDelete.TabIndex = 8;
-            btnDelete.Text = "Удалить";
-            btnDelete.UseVisualStyleBackColor = false;
-            btnDelete.Click += btnDelete_Click;
-            //
+            // 
             // btnEdit
-            //
+            // 
             btnEdit.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btnEdit.BackColor = Color.FromArgb(0, 120, 215);
             btnEdit.FlatAppearance.BorderSize = 0;
             btnEdit.FlatStyle = FlatStyle.Flat;
             btnEdit.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             btnEdit.ForeColor = Color.White;
-            btnEdit.Location = new Point(837, 20);
+            btnEdit.Location = new Point(967, 20);
             btnEdit.Margin = new Padding(3, 4, 3, 4);
             btnEdit.Name = "btnEdit";
-            btnEdit.Size = new Size(130, 40);
+            btnEdit.Size = new Size(136, 40);
             btnEdit.TabIndex = 7;
             btnEdit.Text = "Редактировать";
             btnEdit.UseVisualStyleBackColor = false;
             btnEdit.Click += btnEdit_Click;
-            //
+            // 
             // btnRefresh
-            //
+            // 
             btnRefresh.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btnRefresh.BackColor = Color.FromArgb(0, 120, 215);
             btnRefresh.FlatAppearance.BorderSize = 0;
@@ -324,6 +313,7 @@ namespace UniversityContingent.Views
             cmbGroups.Name = "cmbGroups";
             cmbGroups.Size = new Size(244, 28);
             cmbGroups.TabIndex = 5;
+            cmbGroups.SelectedIndexChanged += cmbGroups_SelectedIndexChanged;
             // 
             // cmbDirections
             // 
@@ -333,24 +323,14 @@ namespace UniversityContingent.Views
             cmbDirections.Name = "cmbDirections";
             cmbDirections.Size = new Size(244, 28);
             cmbDirections.TabIndex = 4;
-            cmbDirections.SelectedIndexChanged += cmbFaculties_SelectedIndexChanged;
-            // 
-            // cmbFaculties
-            // 
-            cmbFaculties.DropDownStyle = ComboBoxStyle.DropDownList;
-            cmbFaculties.Location = new Point(79, 26);
-            cmbFaculties.Margin = new Padding(3, 4, 3, 4);
-            cmbFaculties.Name = "cmbFaculties";
-            cmbFaculties.Size = new Size(208, 28);
-            cmbFaculties.TabIndex = 3;
-            cmbFaculties.SelectedIndexChanged += cmbFaculties_SelectedIndexChanged;
+            cmbDirections.SelectedIndexChanged += cmbDirections_SelectedIndexChanged;
             // 
             // lblGroups
             // 
             lblGroups.AutoSize = true;
             lblGroups.Location = new Point(613, 6);
             lblGroups.Name = "lblGroups";
-            lblGroups.Size = new Size(63, 20);
+            lblGroups.Size = new Size(61, 20);
             lblGroups.TabIndex = 2;
             lblGroups.Text = "Группы";
             // 
@@ -359,29 +339,33 @@ namespace UniversityContingent.Views
             lblDirections.AutoSize = true;
             lblDirections.Location = new Point(308, 6);
             lblDirections.Name = "lblDirections";
-            lblDirections.Size = new Size(110, 20);
+            lblDirections.Size = new Size(104, 20);
             lblDirections.TabIndex = 1;
             lblDirections.Text = "Направления";
-            // 
-            // lblFaculties
-            // 
-            lblFaculties.AutoSize = true;
-            lblFaculties.Location = new Point(79, 6);
-            lblFaculties.Name = "lblFaculties";
-            lblFaculties.Size = new Size(92, 20);
-            lblFaculties.TabIndex = 0;
-            lblFaculties.Text = "Факультеты";
             // 
             // lblStatus
             // 
             lblStatus.AutoSize = true;
             lblStatus.Dock = DockStyle.Bottom;
-            lblStatus.Location = new Point(3, 624);
+            lblStatus.Location = new Point(3, 617);
             lblStatus.Name = "lblStatus";
             lblStatus.Padding = new Padding(10);
-            lblStatus.Size = new Size(149, 33);
+            lblStatus.Size = new Size(191, 40);
             lblStatus.TabIndex = 3;
             lblStatus.Text = "Загружено студентов: 0";
+            // 
+            // lblFaculty
+            // 
+            lblFaculty.AutoSize = true;
+            lblFaculty.Dock = DockStyle.Bottom;
+            lblFaculty.Font = new Font("Segoe UI", 9F, FontStyle.Italic);
+            lblFaculty.ForeColor = Color.Gray;
+            lblFaculty.Location = new Point(3, 590);
+            lblFaculty.Name = "lblFaculty";
+            lblFaculty.Padding = new Padding(10);
+            lblFaculty.Size = new Size(150, 30);
+            lblFaculty.TabIndex = 4;
+            lblFaculty.Text = "Факультет: —";
             // 
             // MainForm
             // 
@@ -436,11 +420,11 @@ namespace UniversityContingent.Views
         private Panel panelFilters;
         private ComboBox cmbGroups;
         private ComboBox cmbDirections;
-        private ComboBox cmbFaculties;
         private Label lblGroups;
         private Label lblDirections;
-        private Label lblFaculties;
         private Button btnRefresh;
+        private Button btnEdit;
+        private Label lblFaculty;
         private Label lblStatus;
     }
 }

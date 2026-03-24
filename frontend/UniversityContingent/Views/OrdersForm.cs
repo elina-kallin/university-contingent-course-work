@@ -118,6 +118,15 @@ namespace UniversityContingent.Views
             }
         }
 
+        private void btnAddNextCourse_Click(object sender, EventArgs e)
+        {
+            using var form = new OrderNextCourseCreateForm(_apiService);
+            if (form.ShowDialog() == DialogResult.OK)
+            {
+                _ = LoadOrdersAsync();
+            }
+        }
+
         private void btnEdit_Click(object sender, EventArgs e)
         {
             MessageBox.Show("Редактирование приказов недоступно. Приказы можно только создавать новые.",

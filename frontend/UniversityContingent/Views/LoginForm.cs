@@ -38,12 +38,14 @@ namespace UniversityContingent.Views
 
             try
             {
+                Console.WriteLine($"[DEBUG] Попытка входа: login={login}, url={_apiService.GetType().GetProperty("_baseUrl")?.GetValue(_apiService)}");
+                
                 var response = await _apiService.LoginAsync(login, password);
 
                 if (response != null)
                 {
                     _loginSuccessful = true;
-                    
+
                     // Открываем главную форму
                     var mainForm = new MainForm(_apiService, response);
                     mainForm.Show();
@@ -57,7 +59,20 @@ namespace UniversityContingent.Views
             }
             catch (Exception ex)
             {
-                lblError.Text = $"Ошибка подключения: {ex.Message}";
+                var errorMsg = $"Ошибка подключения: {ex.Message}";
+                if (ex.InnerException != null)
+                {
+                    errorMsg += $"\n\nВнутренняя ошибка: {ex.InnerException.Message}";
+                }
+                errorMsg += $"\n\nТип ошибки: {ex.GetType().Name}";
+                errorMsg += $"\n\nStack trace:\n{ex.StackTrace}";
+                
+                Console.WriteLine($"[DEBUG] Login error: {ex}");
+                
+                MessageBox.Show(errorMsg, "Ошибка авторизации", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    
+                lblError.Text = $"Ошибка: {ex.Message}";
                 lblError.Visible = true;
             }
             finally

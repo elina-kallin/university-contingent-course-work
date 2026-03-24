@@ -278,9 +278,9 @@ def generate_expulsion_order_html(
 
 
 def generate_generic_order_html(
-    order: dict, 
-    students: list, 
-    title: str, 
+    order: dict,
+    students: list,
+    title: str,
     university_name: str = "Университет",
     dean_full_name: str = ""
 ) -> str:
@@ -293,7 +293,7 @@ def generate_generic_order_html(
             <td>{s.get('study_book_number','')}</td>
             <td>{s.get('group_name','')}</td>
         </tr>"""
-    
+
     html = f"""<!DOCTYPE html>
 <html>
 <head>
@@ -315,18 +315,18 @@ def generate_generic_order_html(
     <div class="header">
         <div style="font-size: 16pt; font-weight: bold;">{university_name}</div>
     </div>
-    
+
     <div class="order-title">{title}</div>
-    
+
     <div class="order-meta">
         Дата: {order.get('date','')}<br>
         № {order.get('number','')}
     </div>
-    
+
     {f'<div style="text-align: center; font-style: italic; margin: 20px 0;">от имени декана {dean_full_name}</div>' if dean_full_name else ''}
-    
+
     <div style="margin: 20px 0;">{order.get('reason','')}</div>
-    
+
     <table>
         <thead>
             <tr>
@@ -340,12 +340,199 @@ def generate_generic_order_html(
             {rows}
         </tbody>
     </table>
-    
+
     <div class="signature">
         <div style="margin-top: 30px;">
             _________________ / {dean_full_name if dean_full_name else '_________________'} /
         </div>
         <div style="font-size: 10pt; margin-top: 5px;">(подпись) (расшифровка подписи)</div>
+    </div>
+</body>
+</html>"""
+
+    return html
+
+
+def generate_next_course_order_html(
+    order: dict,
+    students: list,
+    university_name: str = "Университет",
+    dean_full_name: str = "",
+    faculty_name: str = "",
+    faculty_short_name: str = ""
+) -> str:
+    """
+    HTML для приказа о переводе на следующий курс.
+    
+    Параметры:
+    - order: dict с полями number, date, reason, from_course, to_course
+    - students: list с полями last_name, name, patronymic, study_book_number,
+                group_name, faculty_name, direction_name, direction_code
+    - university_name: название университета
+    - dean_full_name: ФИО декана
+    - faculty_name: полное название факультета
+    - faculty_short_name: короткое название факультета
+    """
+    
+    # Генерация строк таблицы
+    rows = ""
+    for i, s in enumerate(students, 1):
+        rows += f"""<tr>
+            <td>{i}</td>
+            <td>{s.get('last_name','')} {s.get('name','')} {s.get('patronymic','')}</td>
+            <td>{s.get('study_book_number','')}</td>
+            <td>{s.get('direction_name','')}</td>
+            <td>{s.get('current_group','')}</td>
+            <td>{s.get('next_group','')}</td>
+        </tr>"""
+    
+    # Текст от имени декана
+    dean_text = ""
+    if dean_full_name:
+        if faculty_short_name:
+            dean_text = f"от имени декана факультета {faculty_short_name} {dean_full_name}"
+        elif faculty_name:
+            dean_text = f"от имени декана {faculty_name} {dean_full_name}"
+        else:
+            dean_text = f"от имени декана {dean_full_name}"
+    
+    # Получаем данные о курсах
+    from_course = order.get('from_course', '')
+    to_course = order.get('to_course', '')
+    
+    html = f"""<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Приказ о переводе на следующий курс №{order.get('number','')}</title>
+    <style>
+        body {{
+            font-family: "Times New Roman", serif;
+            font-size: 14pt;
+            line-height: 1.5;
+            margin: 0;
+            padding: 20px;
+        }}
+        .header {{
+            text-align: center;
+            margin-bottom: 30px;
+        }}
+        .university-name {{
+            font-size: 16pt;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }}
+        .order-title {{
+            font-size: 18pt;
+            font-weight: bold;
+            margin: 30px 0;
+            text-align: center;
+        }}
+        .order-meta {{
+            text-align: right;
+            margin: 20px 0;
+        }}
+        .dean-text {{
+            text-align: center;
+            font-style: italic;
+            margin: 20px 0;
+            font-weight: bold;
+        }}
+        .reason-text {{
+            margin: 20px 0;
+            text-align: justify;
+        }}
+        table {{
+            width: 100%;
+            border-collapse: collapse;
+            margin: 30px 0;
+            font-size: 12pt;
+        }}
+        th, td {{
+            border: 1px solid #000;
+            padding: 8px;
+            text-align: left;
+            vertical-align: top;
+        }}
+        th {{
+            background-color: #f0f0f0;
+            font-weight: bold;
+            text-align: center;
+        }}
+        .signature {{
+            margin-top: 50px;
+            text-align: left;
+        }}
+        .signature-line {{
+            margin-top: 30px;
+        }}
+        .date-sign {{
+            margin-top: 30px;
+            text-align: left;
+        }}
+        @media print {{
+            @page {{
+                margin: 2cm;
+                size: A4;
+            }}
+            body {{
+                font-size: 12pt;
+                padding: 0;
+            }}
+        }}
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="university-name">{university_name}</div>
+    </div>
+
+    <div class="order-title">ПРИКАЗ</div>
+    <div style="text-align: center; margin-bottom: 20px;">О переводе студентов на следующий курс</div>
+
+    <div class="order-meta">
+        Дата: {order.get('date','')}<br>
+        № {order.get('number','')}
+    </div>
+
+    {f'<div class="dean-text">{dean_text}</div>' if dean_text else ''}
+
+    <div class="reason-text">
+        В связи с успешным завершением промежуточной аттестации, отсутствием академической задолженности,
+        приказываю признать успешно завершившими промежуточную аттестацию и перевести следующих студентов
+        на следующий курс учебного года в соответствии с приведенным ниже списком.
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 5%;">№</th>
+                <th style="width: 30%;">ФИО студента</th>
+                <th style="width: 15%;">Номер зачетной книжки</th>
+                <th style="width: 20%;">Направление</th>
+                <th style="width: 15%;">Текущая группа</th>
+                <th style="width: 15%;">Следующая группа</th>
+            </tr>
+        </thead>
+        <tbody>
+            {rows}
+        </tbody>
+    </table>
+
+    <div class="reason-text">
+        Перевод осуществить с {from_course} курса на {to_course} курс на основании завершенной сессии без академических задолженностей.
+    </div>
+
+    <div class="signature">
+        <div class="date-sign">
+            Дата: {order.get('date','')}
+        </div>
+        <div class="signature-line">
+            _________________ / {dean_full_name if dean_full_name else '_________________'} /
+        </div>
+        <div style="font-size: 10pt; margin-top: 5px;">
+            (подпись) (расшифровка подписи)
+        </div>
     </div>
 </body>
 </html>"""

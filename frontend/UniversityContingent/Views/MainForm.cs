@@ -57,16 +57,23 @@ namespace UniversityContingent.Views
         private async Task LoadDirectionsAsync()
         {
             var directions = await _apiService.GetDirectionsAsync() ?? new List<Direction>();
-            
+
             // Добавляем пустой элемент "Выбрать направление"
             var directionList = new List<dynamic> { new { Id = Guid.Empty, Name = "— Выберите направление —" } };
             directionList.AddRange(directions.Select(d => new { d.Id, d.Name }));
-            
+
+            // Отписываем событие перед установкой DataSource
+            cmbDirections.SelectedIndexChanged -= cmbDirections_SelectedIndexChanged;
+
             cmbDirections.DataSource = directionList;
             cmbDirections.DisplayMember = "Name";
             cmbDirections.ValueMember = "Id";
+            cmbDirections.SelectedIndex = 0; // Выбираем первый элемент (пустой)
             cmbDirections.Enabled = true;
-            
+
+            // Подписываем событие после установки DataSource
+            cmbDirections.SelectedIndexChanged += cmbDirections_SelectedIndexChanged;
+
             // Группы и студенты заблокированы до выбора направления
             cmbGroups.Enabled = false;
         }
@@ -177,9 +184,12 @@ namespace UniversityContingent.Views
 
         private async void cmbDirections_SelectedIndexChanged(object sender, EventArgs e)
         {
+            // Игнорируем если SelectedValue null или Guid.Empty (элемент "— Выберите направление —")
+            if (cmbDirections.SelectedValue == null || cmbDirections.SelectedValue is Guid dirId && dirId == Guid.Empty)
+                return;
+                
             // При выборе направления загружаем группы этого направления
-            // Игнорируем если выбрано "— Выберите направление —"
-            if (!_isLoading && cmbDirections.SelectedValue is Guid dirId && dirId != Guid.Empty)
+            if (!_isLoading && cmbDirections.SelectedValue is Guid selectedDirId && selectedDirId != Guid.Empty)
             {
                 await LoadDataAsync();
             }
@@ -188,7 +198,7 @@ namespace UniversityContingent.Views
         private async void cmbGroups_SelectedIndexChanged(object sender, EventArgs e)
         {
             // При выборе группы загружаем студентов этой группы
-            if (!_isLoading && cmbGroups.SelectedValue is Guid && cmbGroups.SelectedValue != null)
+            if (!_isLoading && cmbGroups.SelectedValue != null && cmbGroups.SelectedValue is Guid)
             {
                 await LoadDataAsync();
             }
@@ -313,6 +323,49 @@ namespace UniversityContingent.Views
             using var form = new OrdersForm(_apiService);
             form.ShowDialog();
             _ = LoadDataAsync(); // Обновляем данные после закрытия
+        }
+
+        private void создатьПриказОЗачисленииToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using var form = new OrderCreateForm(_apiService);
+            if (form.ShowDialog() == DialogResult.OK)
+            {
+                _ = LoadDataAsync();
+            }
+        }
+
+        private void создатьПриказОбОтчисленииToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("Создание приказа об отчислении в разработке", "Информация",
+                MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void создатьПриказОПереводеНаСледующийКурсToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using var form = new OrderNextCourseCreateForm(_apiService);
+            if (form.ShowDialog() == DialogResult.OK)
+            {
+                _ = LoadDataAsync();
+            }
+        }
+
+        private void создатьПриказОПереводеНаДругоеНаправлениеToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("Создание приказа о переводе на другое направление в разработке", "Информация",
+                MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void создатьПриказОбАкадемическомОтпускеToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("Создание приказа об академическом отпуске в разработке", "Информация",
+                MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void просмотретьВсеПриказыToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using var form = new OrdersForm(_apiService);
+            form.ShowDialog();
+            _ = LoadDataAsync();
         }
 
         // Меню - Отчеты

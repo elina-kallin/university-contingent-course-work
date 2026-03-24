@@ -494,5 +494,10 @@ namespace UniversityContingent.Controller.Api
         {
             return await DeleteAsync($"/orders/{id}");
         }
+
+        public async Task<Order?> CreateNextCourseOrderAsync(NextCourseOrderWithStudentsCreate data)
+        {
+            return await PostAsyncWithEmptyResponse<Order>("/special-orders/next-course-with-students", data);
+        }
     }
 }

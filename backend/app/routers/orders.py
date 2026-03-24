@@ -6,7 +6,7 @@ from typing import List
 from app.database.database import get_db
 from app.cruds import order as crud
 from app.cruds import order_student as order_student_crud
-from app.services.print_service import generate_enrollment_order_html, generate_expulsion_order_html, generate_generic_order_html
+from app.services.print_service import generate_enrollment_order_html, generate_expulsion_order_html, generate_generic_order_html, generate_next_course_order_html
 from app.schemas.order import OrderCreate, OrderUpdate, OrderRead
 from app.schemas.order_student import OrderStudentCreate, OrderStudentRead
 from app.core.dependencies import get_current_dean
@@ -90,6 +90,7 @@ def print_order(order_id: UUID, db: Session = Depends(get_db), dean: Dean = Depe
     from app.models.group import Group
     from app.models.direction import Direction
     from app.models.faculty import Faculty
+    from app.models.next_course_order import NextCourseOrder
 
     # Получаем приказ
     order = db.query(Order).filter(Order.id == order_id).first()
@@ -103,8 +104,14 @@ def print_order(order_id: UUID, db: Session = Depends(get_db), dean: Dean = Depe
         Student.id.in_(student_ids)
     ).all()
 
-    students_data = [
-        {
+    # Получаем данные о переводе на следующий курс (если есть)
+    next_course_data = None
+    if order.type == OrderType.NEXT_COURSE:
+        next_course_data = db.query(NextCourseOrder).filter(NextCourseOrder.order_id == order_id).first()
+
+    students_data = []
+    for s in students:
+        student_data = {
             "last_name": s.last_name,
             "name": s.name,
             "patronymic": s.patronymic,
@@ -112,11 +119,43 @@ def print_order(order_id: UUID, db: Session = Depends(get_db), dean: Dean = Depe
             "group_name": s.group.name,
             "faculty_name": s.group.direction.faculty.name,
             "direction_name": s.group.direction.name,
-            "education_form": "full-time",  # Можно добавить поле в Student
-            "price": ""  # Можно получить из EnrollmentOrder
+            "direction_code": s.group.direction.code,
+            "current_group": s.group.name,
+            "next_group": ""  # Будет заполнено ниже
         }
-        for s in students
-    ]
+        
+        # Для приказа о переводе на следующий курс вычисляем следующую группу
+        if order.type == OrderType.NEXT_COURSE and next_course_data:
+            # Получаем текущий курс из группы
+            current_course = s.group.course
+            target_course = next_course_data.to_course
+            
+            # Находим группу того же направления на следующем курсе
+            # Ищем группу с тем же направлением и курсом = target_course
+            next_group = db.query(Group).filter(
+                Group.direction_id == s.group.direction_id,
+                Group.course == target_course
+            ).first()
+            
+            if next_group:
+                student_data["next_group"] = next_group.name
+            else:
+                # Если группа не найдена, формируем название автоматически
+                # Например, ПБД-11 -> ПБД-21 (заменяем первую цифру)
+                current_group_name = s.group.name
+                if len(current_group_name) >= 2:
+                    # Находим первую цифру в названии группы
+                    for i, char in enumerate(current_group_name):
+                        if char.isdigit():
+                            # Заменяем эту цифру на target_course
+                            student_data["next_group"] = current_group_name[:i] + str(target_course) + current_group_name[i+1:]
+                            break
+                    else:
+                        student_data["next_group"] = f"{s.group.direction.code}-{target_course}1"
+                else:
+                    student_data["next_group"] = f"{s.group.direction.code}-{target_course}1"
+        
+        students_data.append(student_data)
 
     order_data = {
         "number": order.number,
@@ -125,6 +164,11 @@ def print_order(order_id: UUID, db: Session = Depends(get_db), dean: Dean = Depe
         "type": order.type.value if hasattr(order.type, 'value') else order.type
     }
     
+    # Добавляем данные о курсах для приказа о переводе
+    if next_course_data:
+        order_data["from_course"] = next_course_data.from_course
+        order_data["to_course"] = next_course_data.to_course
+
     # Получаем данные декана и факультета
     dean_name = dean.full_name if dean else ""
     faculty_name = dean.faculty.name if dean and dean.faculty else ""
@@ -133,7 +177,7 @@ def print_order(order_id: UUID, db: Session = Depends(get_db), dean: Dean = Depe
     # Генерируем HTML в зависимости от типа приказа
     if order.type == OrderType.ENROLLMENT:
         html = generate_enrollment_order_html(
-            order_data, 
+            order_data,
             students_data,
             university_name="Университет",
             dean_full_name=dean_name,
@@ -142,13 +186,22 @@ def print_order(order_id: UUID, db: Session = Depends(get_db), dean: Dean = Depe
         )
     elif order.type == OrderType.EXPULSION:
         html = generate_expulsion_order_html(
-            order_data, 
+            order_data,
             students_data,
             university_name="Университет",
             dean_full_name=dean_name
         )
+    elif order.type == OrderType.NEXT_COURSE:
+        html = generate_next_course_order_html(
+            order_data,
+            students_data,
+            university_name="Университет",
+            dean_full_name=dean_name,
+            faculty_name=faculty_name,
+            faculty_short_name=faculty_short_name
+        )
     else:
         title = f"ПРИКАЗ ({order.type})"
         html = generate_generic_order_html(order_data, students_data, title)
-    
+
     return Response(content=html, media_type="text/html")

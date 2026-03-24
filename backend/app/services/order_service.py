@@ -173,22 +173,22 @@ class OrderService:
             )
             self.db.add(order)
             self.db.flush()
-            
+
             next_course_order = NextCourseOrder(
                 order_id=order.id,
                 from_course=next_course_data.get("from_course"),
                 to_course=next_course_data.get("to_course")
             )
             self.db.add(next_course_order)
-            
+
             for student_id in student_ids:
-                order_student = OrderStudent(order_id=order.id, student_id=student.id)
+                order_student = OrderStudent(order_id=order.id, student_id=student_id)
                 self.db.add(order_student)
-            
+
             self.db.commit()
             self.db.refresh(order)
             return {"order": order, "next_course_order": next_course_order}
-            
+
         except Exception as e:
             self.db.rollback()
             raise e

@@ -41,14 +41,25 @@ namespace UniversityContingent.Views
         private async Task LoadDirectionsAsync()
         {
             _directions = await _apiService.GetDirectionsAsync() ?? new List<Direction>();
+            
+            // Отписываем событие перед установкой DataSource
+            cmbDirection.SelectedIndexChanged -= cmbDirection_SelectedIndexChanged;
+            
             cmbDirection.DataSource = _directions.Select(d => new { d.Id, d.Name, d.Code }).ToList();
             cmbDirection.DisplayMember = "Name";
             cmbDirection.ValueMember = "Id";
+            cmbDirection.SelectedIndex = -1; // Сбрасываем выбор
+            
+            // Подписываем событие после установки DataSource
             cmbDirection.SelectedIndexChanged += cmbDirection_SelectedIndexChanged;
         }
 
         private async void cmbDirection_SelectedIndexChanged(object sender, EventArgs e)
         {
+            // Игнорируем событие если оно сработало до выбора пользователем
+            if (cmbDirection.SelectedIndex < 0 || cmbDirection.SelectedValue == null)
+                return;
+                
             if (cmbDirection.SelectedValue is Guid directionId && directionId != Guid.Empty)
             {
                 await LoadGroupsByDirectionAsync(directionId);
@@ -65,7 +76,7 @@ namespace UniversityContingent.Views
         {
             _groups = (await _apiService.GetGroupsAsync() ?? new List<Group>())
                 .Where(g => g.DirectionId == directionId).ToList();
-            
+
             cmbGroup.DataSource = _groups.Select(g => new { g.Id, g.Name }).ToList();
             cmbGroup.DisplayMember = "Name";
             cmbGroup.ValueMember = "Id";

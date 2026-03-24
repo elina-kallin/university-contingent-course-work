@@ -173,13 +173,15 @@ namespace UniversityContingent.Views
             {
                 // Получаем форму обучения
                 var educationForm = cmbEducationForm.SelectedValue?.ToString() ?? "full-time";
-                
+
                 // Получаем цену (если 0 или пусто, то null)
                 string? price = null;
-                if (decimal.TryParse(txtPrice.Text, out decimal priceValue) && priceValue > 0)
+                if (!string.IsNullOrEmpty(txtPrice.Text) && decimal.TryParse(txtPrice.Text, out decimal priceValue) && priceValue > 0)
                 {
                     price = priceValue.ToString();
                 }
+                
+                Console.WriteLine($"[DEBUG] Creating enrollment order with price: '{price}' (txtPrice.Text='{txtPrice.Text}')");
 
                 var orderData = new EnrollmentOrderWithStudentsCreate
                 {
@@ -205,6 +207,8 @@ namespace UniversityContingent.Views
                         GroupId = s.GroupId
                     }).ToList()
                 };
+                
+                Console.WriteLine($"[DEBUG] Order data: {System.Text.Json.JsonSerializer.Serialize(orderData)}");
 
                 var result = await _apiService.CreateEnrollmentOrderAsync(orderData);
 

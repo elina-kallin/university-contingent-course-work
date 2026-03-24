@@ -199,6 +199,9 @@ namespace UniversityContingent.Controller.ViewModels
         [DisplayName("Отчество")]
         public string Patronymic { get; set; } = string.Empty;
 
+        [DisplayName("Номер зачетки")]
+        public int StudyBookNumber { get; set; }
+
         [DisplayName("Группа")]
         public Guid GroupId { get; set; }
 

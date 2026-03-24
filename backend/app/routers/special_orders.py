@@ -217,12 +217,26 @@ def create_enrollment_order_with_students(
     Создать приказ о зачислении со студентами.
     Студенты создаются автоматически и привязываются к приказу.
     """
+    # enrollment_order - это dict согласно схеме
+    enrollment_dict = data.enrollment_order
+    
+    print(f"[DEBUG] Received enrollment data:")
+    print(f"[DEBUG]   order: {data.order}")
+    print(f"[DEBUG]   enrollment_order: {enrollment_dict}")
+    print(f"[DEBUG]   education_form: {enrollment_dict.get('education_form')}")
+    print(f"[DEBUG]   price: {enrollment_dict.get('price')}")
+    print(f"[DEBUG]   price type: {type(enrollment_dict.get('price'))}")
+    print(f"[DEBUG]   students count: {len(data.students)}")
+    
     service = OrderService(db)
     result = service.create_enrollment_order_with_students(
         order_data=data.order,
-        enrollment_data=data.enrollment_order,
+        enrollment_data=enrollment_dict,
         students_data=[s.model_dump() for s in data.students]
     )
+    
+    print(f"[DEBUG] Created enrollment_order with price: {result['enrollment_order'].price}")
+    
     return {
         "message": "Приказ о зачислении создан",
         "order_id": str(result["order"].id),

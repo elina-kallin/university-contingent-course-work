@@ -25,6 +25,7 @@ namespace UniversityContingent.Views
                     LastName = student.LastName ?? string.Empty,
                     Name = student.Name ?? string.Empty,
                     Patronymic = student.Patronymic ?? string.Empty,
+                    StudyBookNumber = student.StudyBookNumber,
                     GroupId = student.GroupId,
                     EnrollmentDate = student.EnrollmentDate ?? DateTime.Now
                 };
@@ -54,18 +55,23 @@ namespace UniversityContingent.Views
             txtName.Text = _viewModel.Name;
             txtPatronymic.Text = _viewModel.Patronymic;
             dtpEnrollmentDate.Value = _viewModel.EnrollmentDate;
-            
-            // Номер зачетки - случайное число для нового студента
+
+            // Номер зачетки - случайное число для нового студента, текущее значение для редактируемого
             if (!_isEdit)
             {
                 numStudyBook.Value = new Random().Next(10000, 99999);
+            }
+            else
+            {
+                // Для редактируемого студента устанавливаем текущий номер зачетки
+                numStudyBook.Value = _viewModel.StudyBookNumber;
             }
 
             if (_viewModel.GroupId != Guid.Empty && cmbGroup.Items.Count > 0)
             {
                 cmbGroup.SelectedValue = _viewModel.GroupId;
             }
-            
+
             // Статус всегда "Обучается" для новых и редактируемых
             lblStatusValue.Text = "Обучается";
         }

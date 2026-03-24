@@ -91,6 +91,7 @@ def print_order(order_id: UUID, db: Session = Depends(get_db), dean: Dean = Depe
     from app.models.direction import Direction
     from app.models.faculty import Faculty
     from app.models.next_course_order import NextCourseOrder
+    from app.models.enrollment_order import EnrollmentOrder
 
     # Получаем приказ
     order = db.query(Order).filter(Order.id == order_id).first()
@@ -103,6 +104,11 @@ def print_order(order_id: UUID, db: Session = Depends(get_db), dean: Dean = Depe
     students = db.query(Student).join(Group).join(Direction).join(Faculty).filter(
         Student.id.in_(student_ids)
     ).all()
+
+    # Получаем данные о зачислении (если это приказ о зачислении)
+    enrollment_data = None
+    if order.type == OrderType.ENROLLMENT:
+        enrollment_data = db.query(EnrollmentOrder).filter(EnrollmentOrder.order_id == order_id).first()
 
     # Получаем данные о переводе на следующий курс (если есть)
     next_course_data = None
@@ -121,22 +127,29 @@ def print_order(order_id: UUID, db: Session = Depends(get_db), dean: Dean = Depe
             "direction_name": s.group.direction.name,
             "direction_code": s.group.direction.code,
             "current_group": s.group.name,
-            "next_group": ""  # Будет заполнено ниже
+            "next_group": "",  # Будет заполнено ниже
+            "education_form": "full-time",
+            "price": ""
         }
-        
+
+        # Для приказа о зачислении добавляем форму обучения и цену
+        if order.type == OrderType.ENROLLMENT and enrollment_data:
+            student_data["education_form"] = enrollment_data.education_form
+            student_data["price"] = enrollment_data.price
+
         # Для приказа о переводе на следующий курс вычисляем следующую группу
         if order.type == OrderType.NEXT_COURSE and next_course_data:
             # Получаем текущий курс из группы
             current_course = s.group.course
             target_course = next_course_data.to_course
-            
+
             # Находим группу того же направления на следующем курсе
             # Ищем группу с тем же направлением и курсом = target_course
             next_group = db.query(Group).filter(
                 Group.direction_id == s.group.direction_id,
                 Group.course == target_course
             ).first()
-            
+
             if next_group:
                 student_data["next_group"] = next_group.name
             else:
@@ -154,7 +167,7 @@ def print_order(order_id: UUID, db: Session = Depends(get_db), dean: Dean = Depe
                         student_data["next_group"] = f"{s.group.direction.code}-{target_course}1"
                 else:
                     student_data["next_group"] = f"{s.group.direction.code}-{target_course}1"
-        
+
         students_data.append(student_data)
 
     order_data = {
@@ -163,7 +176,7 @@ def print_order(order_id: UUID, db: Session = Depends(get_db), dean: Dean = Depe
         "reason": order.reason,
         "type": order.type.value if hasattr(order.type, 'value') else order.type
     }
-    
+
     # Добавляем данные о курсах для приказа о переводе
     if next_course_data:
         order_data["from_course"] = next_course_data.from_course

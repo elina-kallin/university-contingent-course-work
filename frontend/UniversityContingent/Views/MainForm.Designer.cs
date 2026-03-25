@@ -38,6 +38,13 @@ namespace UniversityContingent.Views
             группыToolStripMenuItem = new ToolStripMenuItem();
             студентыToolStripMenuItem = new ToolStripMenuItem();
             приказыToolStripMenuItem = new ToolStripMenuItem();
+            создатьПриказОЗачисленииToolStripMenuItem = new ToolStripMenuItem();
+            создатьПриказОбОтчисленииToolStripMenuItem = new ToolStripMenuItem();
+            создатьПриказОПереводеНаСледующийКурсToolStripMenuItem = new ToolStripMenuItem();
+            создатьПриказОПереводеНаДругоеНаправлениеToolStripMenuItem = new ToolStripMenuItem();
+            создатьПриказОбАкадемическомОтпускеToolStripMenuItem = new ToolStripMenuItem();
+            toolStripSeparator1 = new ToolStripSeparator();
+            просмотретьВсеПриказыToolStripMenuItem = new ToolStripMenuItem();
             отчетыToolStripMenuItem = new ToolStripMenuItem();
             toolStripMenuItem1 = new ToolStripMenuItem();
             panelTop = new Panel();
@@ -119,75 +126,65 @@ namespace UniversityContingent.Views
             группыToolStripMenuItem.Click += группыToolStripMenuItem_Click;
             // 
             // студентыToolStripMenuItem
-            //
+            // 
             студентыToolStripMenuItem.Name = "студентыToolStripMenuItem";
             студентыToolStripMenuItem.Size = new Size(87, 24);
             студентыToolStripMenuItem.Text = "Студенты";
             студентыToolStripMenuItem.Click += студентыToolStripMenuItem_Click;
-            //
+            // 
             // приказыToolStripMenuItem
-            //
+            // 
+            приказыToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { создатьПриказОЗачисленииToolStripMenuItem, создатьПриказОбОтчисленииToolStripMenuItem, создатьПриказОПереводеНаСледующийКурсToolStripMenuItem, создатьПриказОПереводеНаДругоеНаправлениеToolStripMenuItem, создатьПриказОбАкадемическомОтпускеToolStripMenuItem, toolStripSeparator1, просмотретьВсеПриказыToolStripMenuItem });
             приказыToolStripMenuItem.Name = "приказыToolStripMenuItem";
             приказыToolStripMenuItem.Size = new Size(85, 24);
             приказыToolStripMenuItem.Text = "Приказы";
-            //
+            // 
             // создатьПриказОЗачисленииToolStripMenuItem
-            //
-            создатьПриказОЗачисленииToolStripMenuItem = new ToolStripMenuItem();
+            // 
             создатьПриказОЗачисленииToolStripMenuItem.Name = "создатьПриказОЗачисленииToolStripMenuItem";
-            создатьПриказОЗачисленииToolStripMenuItem.Size = new Size(360, 26);
+            создатьПриказОЗачисленииToolStripMenuItem.Size = new Size(453, 26);
             создатьПриказОЗачисленииToolStripMenuItem.Text = "Создать приказ о зачислении";
             создатьПриказОЗачисленииToolStripMenuItem.Click += создатьПриказОЗачисленииToolStripMenuItem_Click;
-            //
+            // 
             // создатьПриказОбОтчисленииToolStripMenuItem
-            //
-            создатьПриказОбОтчисленииToolStripMenuItem = new ToolStripMenuItem();
+            // 
             создатьПриказОбОтчисленииToolStripMenuItem.Name = "создатьПриказОбОтчисленииToolStripMenuItem";
-            создатьПриказОбОтчисленииToolStripMenuItem.Size = new Size(360, 26);
+            создатьПриказОбОтчисленииToolStripMenuItem.Size = new Size(453, 26);
             создатьПриказОбОтчисленииToolStripMenuItem.Text = "Создать приказ об отчислении";
             создатьПриказОбОтчисленииToolStripMenuItem.Click += создатьПриказОбОтчисленииToolStripMenuItem_Click;
-            //
+            // 
             // создатьПриказОПереводеНаСледующийКурсToolStripMenuItem
-            //
-            создатьПриказОПереводеНаСледующийКурсToolStripMenuItem = new ToolStripMenuItem();
+            // 
             создатьПриказОПереводеНаСледующийКурсToolStripMenuItem.Name = "создатьПриказОПереводеНаСледующийКурсToolStripMenuItem";
-            создатьПриказОПереводеНаСледующийКурсToolStripMenuItem.Size = new Size(360, 26);
+            создатьПриказОПереводеНаСледующийКурсToolStripMenuItem.Size = new Size(453, 26);
             создатьПриказОПереводеНаСледующийКурсToolStripMenuItem.Text = "Создать приказ о переводе на следующий курс";
             создатьПриказОПереводеНаСледующийКурсToolStripMenuItem.Click += создатьПриказОПереводеНаСледующийКурсToolStripMenuItem_Click;
-            //
+            // 
             // создатьПриказОПереводеНаДругоеНаправлениеToolStripMenuItem
-            //
-            создатьПриказОПереводеНаДругоеНаправлениеToolStripMenuItem = new ToolStripMenuItem();
+            // 
             создатьПриказОПереводеНаДругоеНаправлениеToolStripMenuItem.Name = "создатьПриказОПереводеНаДругоеНаправлениеToolStripMenuItem";
-            создатьПриказОПереводеНаДругоеНаправлениеToolStripMenuItem.Size = new Size(360, 26);
+            создатьПриказОПереводеНаДругоеНаправлениеToolStripMenuItem.Size = new Size(453, 26);
             создатьПриказОПереводеНаДругоеНаправлениеToolStripMenuItem.Text = "Создать приказ о переводе на другое направление";
             создатьПриказОПереводеНаДругоеНаправлениеToolStripMenuItem.Click += создатьПриказОПереводеНаДругоеНаправлениеToolStripMenuItem_Click;
-            //
+            // 
             // создатьПриказОбАкадемическомОтпускеToolStripMenuItem
-            //
-            создатьПриказОбАкадемическомОтпускеToolStripMenuItem = new ToolStripMenuItem();
+            // 
             создатьПриказОбАкадемическомОтпускеToolStripMenuItem.Name = "создатьПриказОбАкадемическомОтпускеToolStripMenuItem";
-            создатьПриказОбАкадемическомОтпускеToolStripMenuItem.Size = new Size(360, 26);
+            создатьПриказОбАкадемическомОтпускеToolStripMenuItem.Size = new Size(453, 26);
             создатьПриказОбАкадемическомОтпускеToolStripMenuItem.Text = "Создать приказ об академическом отпуске";
             создатьПриказОбАкадемическомОтпускеToolStripMenuItem.Click += создатьПриказОбАкадемическомОтпускеToolStripMenuItem_Click;
-            //
+            // 
             // toolStripSeparator1
-            //
-            toolStripSeparator1 = new ToolStripSeparator();
+            // 
             toolStripSeparator1.Name = "toolStripSeparator1";
-            toolStripSeparator1.Size = new Size(357, 6);
-            //
+            toolStripSeparator1.Size = new Size(450, 6);
+            // 
             // просмотретьВсеПриказыToolStripMenuItem
-            //
-            просмотретьВсеПриказыToolStripMenuItem = new ToolStripMenuItem();
+            // 
             просмотретьВсеПриказыToolStripMenuItem.Name = "просмотретьВсеПриказыToolStripMenuItem";
-            просмотретьВсеПриказыToolStripMenuItem.Size = new Size(360, 26);
+            просмотретьВсеПриказыToolStripMenuItem.Size = new Size(453, 26);
             просмотретьВсеПриказыToolStripMenuItem.Text = "Просмотреть все приказы";
             просмотретьВсеПриказыToolStripMenuItem.Click += просмотретьВсеПриказыToolStripMenuItem_Click;
-            //
-            // приказыToolStripMenuItem (добавляем пункты после инициализации)
-            //
-            приказыToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { создатьПриказОЗачисленииToolStripMenuItem, создатьПриказОбОтчисленииToolStripMenuItem, создатьПриказОПереводеНаСледующийКурсToolStripMenuItem, создатьПриказОПереводеНаДругоеНаправлениеToolStripMenuItem, создатьПриказОбАкадемическомОтпускеToolStripMenuItem, toolStripSeparator1, просмотретьВсеПриказыToolStripMenuItem });
             // 
             // отчетыToolStripMenuItem
             // 

@@ -15,9 +15,8 @@ namespace UniversityContingent.Views
 
         private void InitializeComponent()
         {
-            DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
             panelTop = new Panel();
-            btnDelete = new Button();
             btnPrint = new Button();
             btnRefresh = new Button();
             dgvOrders = new DataGridView();
@@ -29,7 +28,6 @@ namespace UniversityContingent.Views
             // panelTop
             // 
             panelTop.BackColor = Color.White;
-            panelTop.Controls.Add(btnDelete);
             panelTop.Controls.Add(btnPrint);
             panelTop.Controls.Add(btnRefresh);
             panelTop.Dock = DockStyle.Top;
@@ -39,23 +37,6 @@ namespace UniversityContingent.Views
             panelTop.Padding = new Padding(11, 13, 11, 13);
             panelTop.Size = new Size(1029, 80);
             panelTop.TabIndex = 0;
-            // 
-            // btnDelete
-            // 
-            btnDelete.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnDelete.BackColor = Color.FromArgb(200, 50, 50);
-            btnDelete.FlatAppearance.BorderSize = 0;
-            btnDelete.FlatStyle = FlatStyle.Flat;
-            btnDelete.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
-            btnDelete.ForeColor = Color.White;
-            btnDelete.Location = new Point(776, 17);
-            btnDelete.Margin = new Padding(3, 4, 3, 4);
-            btnDelete.Name = "btnDelete";
-            btnDelete.Size = new Size(114, 47);
-            btnDelete.TabIndex = 4;
-            btnDelete.Text = "Удалить";
-            btnDelete.UseVisualStyleBackColor = false;
-            btnDelete.Click += btnDelete_Click;
             // 
             // btnPrint
             // 
@@ -95,14 +76,14 @@ namespace UniversityContingent.Views
             dgvOrders.AllowUserToAddRows = false;
             dgvOrders.AllowUserToDeleteRows = false;
             dgvOrders.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            dataGridViewCellStyle1.Alignment = DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = SystemColors.Control;
-            dataGridViewCellStyle1.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
-            dataGridViewCellStyle1.ForeColor = SystemColors.WindowText;
-            dataGridViewCellStyle1.SelectionBackColor = SystemColors.Highlight;
-            dataGridViewCellStyle1.SelectionForeColor = SystemColors.HighlightText;
-            dataGridViewCellStyle1.WrapMode = DataGridViewTriState.True;
-            dgvOrders.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = SystemColors.Control;
+            dataGridViewCellStyle2.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            dataGridViewCellStyle2.ForeColor = SystemColors.WindowText;
+            dataGridViewCellStyle2.SelectionBackColor = SystemColors.Highlight;
+            dataGridViewCellStyle2.SelectionForeColor = SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = DataGridViewTriState.True;
+            dgvOrders.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
             dgvOrders.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dgvOrders.Dock = DockStyle.Fill;
             dgvOrders.Location = new Point(0, 80);
@@ -148,7 +129,6 @@ namespace UniversityContingent.Views
         }
 
         private Panel panelTop;
-        private Button btnDelete;
         private Button btnPrint;
         private Button btnRefresh;
         private DataGridView dgvOrders;

@@ -336,8 +336,11 @@ namespace UniversityContingent.Views
 
         private void создатьПриказОбОтчисленииToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Создание приказа об отчислении в разработке", "Информация",
-                MessageBoxButtons.OK, MessageBoxIcon.Information);
+            using var form = new OrderExpulsionCreateForm(_apiService);
+            if (form.ShowDialog() == DialogResult.OK)
+            {
+                _ = LoadDataAsync();
+            }
         }
 
         private void создатьПриказОПереводеНаСледующийКурсToolStripMenuItem_Click(object sender, EventArgs e)

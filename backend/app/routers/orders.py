@@ -92,6 +92,7 @@ def print_order(order_id: UUID, db: Session = Depends(get_db), dean: Dean = Depe
     from app.models.faculty import Faculty
     from app.models.next_course_order import NextCourseOrder
     from app.models.enrollment_order import EnrollmentOrder
+    from app.models.expulsion_order import ExpulsionOrder
 
     # Получаем приказ
     order = db.query(Order).filter(Order.id == order_id).first()
@@ -109,6 +110,11 @@ def print_order(order_id: UUID, db: Session = Depends(get_db), dean: Dean = Depe
     enrollment_data = None
     if order.type == OrderType.ENROLLMENT:
         enrollment_data = db.query(EnrollmentOrder).filter(EnrollmentOrder.order_id == order_id).first()
+
+    # Получаем данные об отчислении (если это приказ об отчислении)
+    expulsion_data = None
+    if order.type == OrderType.EXPULSION:
+        expulsion_data = db.query(ExpulsionOrder).filter(ExpulsionOrder.order_id == order_id).first()
 
     # Получаем данные о переводе на следующий курс (если есть)
     next_course_data = None
@@ -129,13 +135,18 @@ def print_order(order_id: UUID, db: Session = Depends(get_db), dean: Dean = Depe
             "current_group": s.group.name,
             "next_group": "",  # Будет заполнено ниже
             "education_form": "full-time",
-            "price": ""
+            "price": "",
+            "course": s.group.course
         }
 
         # Для приказа о зачислении добавляем форму обучения и цену
         if order.type == OrderType.ENROLLMENT and enrollment_data:
             student_data["education_form"] = enrollment_data.education_form
             student_data["price"] = enrollment_data.price
+
+        # Для приказа об отчислении добавляем причину
+        if order.type == OrderType.EXPULSION and expulsion_data:
+            student_data["expulsion_reason"] = expulsion_data.expulsion_reason
 
         # Для приказа о переводе на следующий курс вычисляем следующую группу
         if order.type == OrderType.NEXT_COURSE and next_course_data:
@@ -177,6 +188,10 @@ def print_order(order_id: UUID, db: Session = Depends(get_db), dean: Dean = Depe
         "type": order.type.value if hasattr(order.type, 'value') else order.type
     }
 
+    # Добавляем данные об отчислении для приказа об отчислении
+    if expulsion_data:
+        order_data["expulsion_date"] = str(expulsion_data.expulsion_date) if expulsion_data.expulsion_date else ""
+
     # Добавляем данные о курсах для приказа о переводе
     if next_course_data:
         order_data["from_course"] = next_course_data.from_course
@@ -202,7 +217,9 @@ def print_order(order_id: UUID, db: Session = Depends(get_db), dean: Dean = Depe
             order_data,
             students_data,
             university_name="Университет",
-            dean_full_name=dean_name
+            dean_full_name=dean_name,
+            faculty_name=faculty_name,
+            faculty_short_name=faculty_short_name
         )
     elif order.type == OrderType.NEXT_COURSE:
         html = generate_next_course_order_html(

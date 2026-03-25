@@ -235,6 +235,36 @@ namespace UniversityContingent.Models
     }
 
     /// <summary>
+    /// Данные для приказа об отчислении (expulsion_order)
+    /// </summary>
+    public class ExpulsionOrderCreateData
+    {
+        [JsonPropertyName("order_id")]
+        public Guid OrderId { get; set; }
+
+        [JsonPropertyName("expulsion_date")]
+        public DateTime ExpulsionDate { get; set; }
+
+        [JsonPropertyName("expulsion_reason")]
+        public string ExpulsionReason { get; set; } = "debts";
+    }
+
+    /// <summary>
+    /// Данные для приказа об отчислении со студентами
+    /// </summary>
+    public class ExpulsionOrderWithStudentsCreate
+    {
+        [JsonPropertyName("order")]
+        public OrderCreateData Order { get; set; } = new();
+
+        [JsonPropertyName("expulsion_order")]
+        public ExpulsionOrderCreateData ExpulsionOrder { get; set; } = new();
+
+        [JsonPropertyName("student_ids")]
+        public List<Guid> StudentIds { get; set; } = new();
+    }
+
+    /// <summary>
     /// Приказ с данными студентов (для создания)
     /// </summary>
     public class OrderWithStudents

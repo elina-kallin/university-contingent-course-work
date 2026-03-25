@@ -499,5 +499,10 @@ namespace UniversityContingent.Controller.Api
         {
             return await PostAsyncWithEmptyResponse<Order>("/special-orders/next-course-with-students", data);
         }
+
+        public async Task<Order?> CreateExpulsionOrderAsync(ExpulsionOrderWithStudentsCreate data)
+        {
+            return await PostAsyncWithEmptyResponse<Order>("/special-orders/expulsion-with-students", data);
+        }
     }
 }

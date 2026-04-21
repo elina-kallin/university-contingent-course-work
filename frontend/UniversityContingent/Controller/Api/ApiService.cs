@@ -17,6 +17,10 @@ namespace UniversityContingent.Controller.Api
         Task LogoutAsync();
 
         // Справочники
+        Task<List<Dean>?> GetDeans();
+
+        Task<Dean> GetCurrentDean();
+
         Task<List<Faculty>?> GetFacultiesAsync();
         Task<List<Direction>?> GetDirectionsAsync();
         Task<List<Group>?> GetGroupsAsync();
@@ -319,6 +323,11 @@ namespace UniversityContingent.Controller.Api
             AccessToken = null;
             _httpClient.DefaultRequestHeaders.Authorization = null;
             await Task.CompletedTask;
+        }
+
+        public async Task<List<Dean>?> GetDeans()
+        {
+            return await GetAsync<List<Dean>>("/deans");
         }
 
         public async Task<List<Faculty>?> GetFacultiesAsync()

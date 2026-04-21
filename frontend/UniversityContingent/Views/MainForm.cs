@@ -17,11 +17,12 @@ namespace UniversityContingent.Views
             _userResponse = userResponse;
 
             // Отображаем приветствие с ФИО декана
-            var displayName = !string.IsNullOrEmpty(userResponse.FullName) 
-                ? userResponse.FullName 
+            var displayName = !string.IsNullOrEmpty(userResponse.FullName)
+                ? userResponse.FullName
                 : userResponse.UserLogin;
             lblUserName.Text = $"Здравствуйте, {displayName}";
             lblRole.Text = userResponse.Role ?? "Пользователь";
+            menuStrip.Text = displayName;
         }
 
         private async void MainForm_Shown(object sender, EventArgs e)
@@ -38,11 +39,11 @@ namespace UniversityContingent.Views
                 // Получаем все факультеты и находим факультет декана
                 // (в реальном проекте нужно получать через /auth/me или из токена)
                 var faculties = await _apiService.GetFacultiesAsync() ?? new List<Faculty>();
-                
+
                 // Для демонстрации берём первый факультет
                 // В реальности нужно знать faculty_id декана
                 _deanFaculty = faculties.FirstOrDefault();
-                
+
                 if (_deanFaculty != null)
                 {
                     lblFaculty.Text = $"Факультет: {_deanFaculty.Name}";
@@ -81,47 +82,47 @@ namespace UniversityContingent.Views
         private async Task LoadDataAsync()
         {
             if (_isLoading) return; // Защита от рекурсивных вызовов
-            
+
             try
             {
                 _isLoading = true;
-                
+
                 // Загружаем все данные
                 var groups = await _apiService.GetGroupsAsync() ?? new List<Group>();
                 var students = await _apiService.GetStudentsAsync() ?? new List<Student>();
 
                 // Фильтруем группы по выбранному направлению
                 var selectedDirectionId = cmbDirections.SelectedValue is Guid dirId && dirId != Guid.Empty ? dirId : Guid.Empty;
-                var filteredGroups = selectedDirectionId != Guid.Empty 
-                    ? groups.Where(g => g.DirectionId == selectedDirectionId).ToList() 
+                var filteredGroups = selectedDirectionId != Guid.Empty
+                    ? groups.Where(g => g.DirectionId == selectedDirectionId).ToList()
                     : groups;
-                
+
                 // Сохраняем текущий выбранный ID группы
                 var currentSelectedGroupId = cmbGroups.SelectedValue is Guid grpId ? grpId : Guid.Empty;
-                
+
                 // Отключаем событие чтобы не вызывать рекурсивную загрузку
                 cmbGroups.SelectedIndexChanged -= cmbGroups_SelectedIndexChanged;
-                
+
                 // Обновляем DataSource групп
                 cmbGroups.DataSource = filteredGroups.Select(g => new { g.Id, g.Name }).ToList();
                 cmbGroups.DisplayMember = "Name";
                 cmbGroups.ValueMember = "Id";
-                
+
                 // Восстанавливаем выбор если группа есть в новом списке
                 if (currentSelectedGroupId != Guid.Empty && filteredGroups.Any(g => g.Id == currentSelectedGroupId))
                 {
                     cmbGroups.SelectedValue = currentSelectedGroupId;
                 }
-                
+
                 cmbGroups.Enabled = selectedDirectionId != Guid.Empty && filteredGroups.Count > 0;
-                
+
                 // Включаем событие обратно
                 cmbGroups.SelectedIndexChanged += cmbGroups_SelectedIndexChanged;
 
                 // Фильтруем студентов по выбранной группе или направлению
                 var selectedGroupId = cmbGroups.SelectedValue is Guid selectedGrpId ? selectedGrpId : Guid.Empty;
                 List<Student> filteredStudents;
-                
+
                 if (selectedGroupId != Guid.Empty)
                 {
                     filteredStudents = students.Where(s => s.GroupId == selectedGroupId).ToList();
@@ -187,7 +188,7 @@ namespace UniversityContingent.Views
             // Игнорируем если SelectedValue null или Guid.Empty (элемент "— Выберите направление —")
             if (cmbDirections.SelectedValue == null || cmbDirections.SelectedValue is Guid dirId && dirId == Guid.Empty)
                 return;
-                
+
             // При выборе направления загружаем группы этого направления
             if (!_isLoading && cmbDirections.SelectedValue is Guid selectedDirId && selectedDirId != Guid.Empty)
             {
@@ -287,7 +288,7 @@ namespace UniversityContingent.Views
         // Меню - Справочники
         private void факультетыToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Форма факультетов в разработке", "Информация", 
+            MessageBox.Show("Форма факультетов в разработке", "Информация",
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 

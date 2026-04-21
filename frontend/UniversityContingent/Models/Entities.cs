@@ -3,6 +3,28 @@ using System.Text.Json.Serialization;
 namespace UniversityContingent.Models
 {
     /// <summary>
+    /// Декан
+    /// </summary>
+    public class Dean
+    {
+        [JsonPropertyName("id")]
+        public Guid Id { get; set; }
+
+        [JsonPropertyName("full_name")]
+        public string FullName { get; set; } = string.Empty;
+
+        [JsonPropertyName("login")]
+        public string Login { get; set; } = string.Empty;
+
+        [JsonPropertyName("password_hash")]
+        public string PasswordHash { get; set; } = string.Empty;
+
+        [JsonPropertyName("faculty_id")]
+        public Guid FacultyId { get; set; }
+
+    }
+
+    /// <summary>
     /// Факультет
     /// </summary>
     public class Faculty

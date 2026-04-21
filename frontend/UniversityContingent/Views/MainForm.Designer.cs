@@ -33,10 +33,8 @@ namespace UniversityContingent.Views
             fileToolStripMenuItem = new ToolStripMenuItem();
             exitToolStripMenuItem = new ToolStripMenuItem();
             справочникиToolStripMenuItem = new ToolStripMenuItem();
-            факультетыToolStripMenuItem = new ToolStripMenuItem();
             направленияToolStripMenuItem = new ToolStripMenuItem();
             группыToolStripMenuItem = new ToolStripMenuItem();
-            студентыToolStripMenuItem = new ToolStripMenuItem();
             приказыToolStripMenuItem = new ToolStripMenuItem();
             создатьПриказОЗачисленииToolStripMenuItem = new ToolStripMenuItem();
             создатьПриказОбОтчисленииToolStripMenuItem = new ToolStripMenuItem();
@@ -76,7 +74,7 @@ namespace UniversityContingent.Views
             // menuStrip
             // 
             menuStrip.ImageScalingSize = new Size(20, 20);
-            menuStrip.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem, справочникиToolStripMenuItem, студентыToolStripMenuItem, приказыToolStripMenuItem, отчетыToolStripMenuItem });
+            menuStrip.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem, справочникиToolStripMenuItem, приказыToolStripMenuItem, отчетыToolStripMenuItem });
             menuStrip.Location = new Point(0, 0);
             menuStrip.Name = "menuStrip";
             menuStrip.Padding = new Padding(7, 3, 0, 3);
@@ -99,17 +97,10 @@ namespace UniversityContingent.Views
             // 
             // справочникиToolStripMenuItem
             // 
-            справочникиToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { факультетыToolStripMenuItem, направленияToolStripMenuItem, группыToolStripMenuItem });
+            справочникиToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { направленияToolStripMenuItem, группыToolStripMenuItem });
             справочникиToolStripMenuItem.Name = "справочникиToolStripMenuItem";
             справочникиToolStripMenuItem.Size = new Size(117, 24);
             справочникиToolStripMenuItem.Text = "Справочники";
-            // 
-            // факультетыToolStripMenuItem
-            // 
-            факультетыToolStripMenuItem.Name = "факультетыToolStripMenuItem";
-            факультетыToolStripMenuItem.Size = new Size(187, 26);
-            факультетыToolStripMenuItem.Text = "Факультеты";
-            факультетыToolStripMenuItem.Click += факультетыToolStripMenuItem_Click;
             // 
             // направленияToolStripMenuItem
             // 
@@ -124,13 +115,6 @@ namespace UniversityContingent.Views
             группыToolStripMenuItem.Size = new Size(187, 26);
             группыToolStripMenuItem.Text = "Группы";
             группыToolStripMenuItem.Click += группыToolStripMenuItem_Click;
-            // 
-            // студентыToolStripMenuItem
-            // 
-            студентыToolStripMenuItem.Name = "студентыToolStripMenuItem";
-            студентыToolStripMenuItem.Size = new Size(87, 24);
-            студентыToolStripMenuItem.Text = "Студенты";
-            студентыToolStripMenuItem.Click += студентыToolStripMenuItem_Click;
             // 
             // приказыToolStripMenuItem
             // 
@@ -432,7 +416,7 @@ namespace UniversityContingent.Views
             MainMenuStrip = menuStrip;
             Name = "MainForm";
             StartPosition = FormStartPosition.CenterScreen;
-            Text = "University Contingent - Учёт контингента";
+            Text = "Учёт контингента";
             WindowState = FormWindowState.Maximized;
             Shown += MainForm_Shown;
             menuStrip.ResumeLayout(false);
@@ -456,10 +440,8 @@ namespace UniversityContingent.Views
         private ToolStripMenuItem fileToolStripMenuItem;
         private ToolStripMenuItem exitToolStripMenuItem;
         private ToolStripMenuItem справочникиToolStripMenuItem;
-        private ToolStripMenuItem факультетыToolStripMenuItem;
         private ToolStripMenuItem направленияToolStripMenuItem;
         private ToolStripMenuItem группыToolStripMenuItem;
-        private ToolStripMenuItem студентыToolStripMenuItem;
         private ToolStripMenuItem приказыToolStripMenuItem;
         private ToolStripMenuItem отчетыToolStripMenuItem;
         private ToolStripMenuItem toolStripMenuItem1;

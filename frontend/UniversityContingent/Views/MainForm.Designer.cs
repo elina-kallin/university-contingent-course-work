@@ -28,7 +28,7 @@ namespace UniversityContingent.Views
         /// </summary>
         private void InitializeComponent()
         {
-            DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
             menuStrip = new MenuStrip();
             fileToolStripMenuItem = new ToolStripMenuItem();
             exitToolStripMenuItem = new ToolStripMenuItem();
@@ -274,14 +274,14 @@ namespace UniversityContingent.Views
             dgvStudents.AllowUserToAddRows = false;
             dgvStudents.AllowUserToDeleteRows = false;
             dgvStudents.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            dataGridViewCellStyle1.Alignment = DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = SystemColors.Control;
-            dataGridViewCellStyle1.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
-            dataGridViewCellStyle1.ForeColor = SystemColors.WindowText;
-            dataGridViewCellStyle1.SelectionBackColor = SystemColors.Highlight;
-            dataGridViewCellStyle1.SelectionForeColor = SystemColors.HighlightText;
-            dataGridViewCellStyle1.WrapMode = DataGridViewTriState.True;
-            dgvStudents.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = SystemColors.Control;
+            dataGridViewCellStyle2.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            dataGridViewCellStyle2.ForeColor = SystemColors.WindowText;
+            dataGridViewCellStyle2.SelectionBackColor = SystemColors.Highlight;
+            dataGridViewCellStyle2.SelectionForeColor = SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = DataGridViewTriState.True;
+            dgvStudents.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
             dgvStudents.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dgvStudents.Dock = DockStyle.Fill;
             dgvStudents.Location = new Point(3, 78);
@@ -346,7 +346,7 @@ namespace UniversityContingent.Views
             // cmbGroups
             // 
             cmbGroups.DropDownStyle = ComboBoxStyle.DropDownList;
-            cmbGroups.Location = new Point(613, 26);
+            cmbGroups.Location = new Point(359, 30);
             cmbGroups.Margin = new Padding(3, 4, 3, 4);
             cmbGroups.Name = "cmbGroups";
             cmbGroups.Size = new Size(244, 28);
@@ -356,17 +356,17 @@ namespace UniversityContingent.Views
             // cmbDirections
             // 
             cmbDirections.DropDownStyle = ComboBoxStyle.DropDownList;
-            cmbDirections.Location = new Point(308, 26);
+            cmbDirections.Location = new Point(16, 30);
             cmbDirections.Margin = new Padding(3, 4, 3, 4);
             cmbDirections.Name = "cmbDirections";
-            cmbDirections.Size = new Size(244, 28);
+            cmbDirections.Size = new Size(323, 28);
             cmbDirections.TabIndex = 4;
             cmbDirections.SelectedIndexChanged += cmbDirections_SelectedIndexChanged;
             // 
             // lblGroups
             // 
             lblGroups.AutoSize = true;
-            lblGroups.Location = new Point(613, 6);
+            lblGroups.Location = new Point(359, 10);
             lblGroups.Name = "lblGroups";
             lblGroups.Size = new Size(61, 20);
             lblGroups.TabIndex = 2;
@@ -375,7 +375,7 @@ namespace UniversityContingent.Views
             // lblDirections
             // 
             lblDirections.AutoSize = true;
-            lblDirections.Location = new Point(308, 6);
+            lblDirections.Location = new Point(16, 10);
             lblDirections.Name = "lblDirections";
             lblDirections.Size = new Size(104, 20);
             lblDirections.TabIndex = 1;

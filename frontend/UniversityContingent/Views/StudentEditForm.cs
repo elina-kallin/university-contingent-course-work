@@ -73,7 +73,7 @@ namespace UniversityContingent.Views
             }
 
             // Статус всегда "Обучается" для новых и редактируемых
-            lblStatusValue.Text = "Обучается";
+            //lblStatusValue.Text = _viewModel.St;
         }
 
         private void SaveViewModel()

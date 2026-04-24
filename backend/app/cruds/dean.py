@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from sqlalchemy.orm import Session
 from app.models.dean import Dean
 from app.schemas.dean import DeanCreate
@@ -21,3 +23,7 @@ def create_dean(db: Session, dean: DeanCreate):
 
 def get_dean_by_login(db: Session, login: str):
     return db.query(Dean).filter(Dean.login == login).first()
+
+
+def get_dean_by_id(db: Session, id: UUID):
+    return db.query(Dean).filter(Dean.id == id).first()

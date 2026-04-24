@@ -19,7 +19,7 @@ namespace UniversityContingent.Controller.Api
         // Справочники
         Task<List<Dean>?> GetDeans();
 
-        Task<Dean> GetCurrentDean();
+        //Task<Dean> GetCurrentDean();
 
         Task<List<Faculty>?> GetFacultiesAsync();
         Task<List<Direction>?> GetDirectionsAsync();
